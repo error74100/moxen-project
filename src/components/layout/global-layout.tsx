@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet, useLocation } from "react-router";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import reactImg from "@/assets/react.svg";
 import { Menu, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -7,9 +7,12 @@ import {
   SheetClose,
   SheetContent,
   SheetFooter,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
 import { gnbMenus } from "@/lib/constants";
+import { useIsMobile } from "@/hooks/utills/use-is-mobile";
 
 const headerBgPages = [
   "/sign-in",
@@ -20,10 +23,14 @@ const headerBgPages = [
 
 export default function GlobalLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
   const pathName = location.pathname;
   const isHeaderBg = headerBgPages.includes(pathName);
 
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -72,65 +79,87 @@ export default function GlobalLayout() {
           {/* //pc menu */}
 
           {/* mobile menu */}
-          <div className="md:hidden">
-            <Sheet>
-              <SheetTrigger>
-                <Menu size={28} className="cursor-pointer" />
-              </SheetTrigger>
+          {isMobile && (
+            <div className="md:hidden">
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger>
+                  <Menu size={28} className="cursor-pointer" />
+                </SheetTrigger>
 
-              <SheetContent
-                side="right"
-                showCloseButton={false}
-                className="data-[side=bottom]:max-h-[50vh] data-[side=top]:max-h-[50vh]"
-              >
-                <div className="flex items-center justify-between px-4 py-2">
-                  <Link to={"/"} className="font-bold">
-                    MENU
-                  </Link>
-                  <SheetClose asChild>
-                    <button className="cursor-pointer p-2">
-                      <X size={30} />
-                    </button>
-                  </SheetClose>
-                </div>
-
-                <div className="no-scrollbar overflow-y-auto px-4">
-                  <nav className="flex flex-col gap-6">
-                    {gnbMenus.map((menu) => (
-                      <NavLink
-                        key={menu.path}
-                        to={menu.path}
-                        className={({ isActive }) =>
-                          `flex items-center hover:text-blue-400 ${isActive ? "text-blue-400" : ""}`
-                        }
+                <SheetContent
+                  side="right"
+                  showCloseButton={false}
+                  className="data-[side=bottom]:max-h-[50vh] data-[side=top]:max-h-[50vh]"
+                >
+                  <SheetHeader>
+                    <div className="flex items-center justify-between">
+                      <Link
+                        to={"/"}
+                        className="font-bold"
+                        onClick={() => setMobileMenuOpen(false)}
                       >
-                        {menu.name}
-                      </NavLink>
-                    ))}
-                  </nav>
-                </div>
+                        <SheetTitle>메뉴</SheetTitle>
+                      </Link>
+                      <SheetClose asChild>
+                        <button className="cursor-pointer p-2">
+                          <X size={30} />
+                        </button>
+                      </SheetClose>
+                    </div>
+                  </SheetHeader>
 
-                <SheetFooter>
-                  <div className="flex gap-2">
-                    <Link
-                      to={"/sign-in"}
-                      className="inline-flex cursor-pointer rounded-full p-1"
-                    >
-                      <UserRound className="h-5 w-5 hover:text-blue-400" />
-                    </Link>
+                  <div className="no-scrollbar overflow-y-auto px-4">
+                    <nav className="flex flex-col gap-6">
+                      {gnbMenus.map((menu) => (
+                        <p
+                          key={menu.path}
+                          onClick={() => {
+                            setMobileMenuOpen(false); // Sheet 닫기
+
+                            setTimeout(() => {
+                              navigate(menu.path); // 애니메이션 끝난 뒤 이동
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }, 250);
+                          }}
+                          className={`flex items-center hover:text-blue-400 ${
+                            location.pathname === menu.path
+                              ? "text-blue-400"
+                              : ""
+                          }`}
+                        >
+                          {menu.name}
+                        </p>
+                      ))}
+                    </nav>
                   </div>
-                </SheetFooter>
-              </SheetContent>
-            </Sheet>
-          </div>
+
+                  <SheetFooter>
+                    <div className="flex gap-2">
+                      <p
+                        onClick={() => {
+                          setMobileMenuOpen(false); // Sheet 닫기
+
+                          setTimeout(() => {
+                            navigate("/sign-in"); // 애니메이션 끝난 뒤 이동
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }, 250);
+                        }}
+                        className="inline-flex cursor-pointer rounded-full p-1"
+                      >
+                        <UserRound className="h-5 w-5 hover:text-blue-400" />
+                      </p>
+                    </div>
+                  </SheetFooter>
+                </SheetContent>
+              </Sheet>
+            </div>
+          )}
           {/* //mobile menu */}
         </div>
       </header>
-
       <main className="m-auto min-h-screen w-full flex-1">
         <Outlet />
       </main>
-
       <footer className="border-t bg-gray-800 py-10 text-center text-white">
         @copyright
       </footer>
