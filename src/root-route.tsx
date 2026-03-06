@@ -16,7 +16,6 @@ import ProfileDetailPage from "./pages/profile-detail-page";
 export default function RootRoute() {
   return (
     <Routes>
-      {/* mac test */}
       <Route element={<GlobalLayout />}>
         <Route path="/" element={<IndexPage />} />
         <Route path="/about" element={<AboutPage />} />

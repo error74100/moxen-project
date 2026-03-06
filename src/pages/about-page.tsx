@@ -14,7 +14,7 @@ export default function AboutPage() {
 
         <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center text-white">
           <h1 className="mb-4 text-3xl font-normal md:text-5xl">
-            우리의 서비스를 소개합니다
+            서비스를 소개합니다
           </h1>
           <p className="max-w-2xl text-sm opacity-90 md:text-lg">
             더 나은 경험을 만들기 위해 우리는 끊임없이 고민하고 발전합니다.
