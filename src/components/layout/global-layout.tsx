@@ -13,6 +13,7 @@ import {
 } from "../ui/sheet";
 import { gnbMenus } from "@/lib/constants";
 import { useIsMobile } from "@/hooks/utills/use-is-mobile";
+import { useMoveScrollTop } from "@/hooks/utills/use-move-scrollTop";
 
 const headerBgPages = [
   "/sign-in",
@@ -31,6 +32,8 @@ export default function GlobalLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isMobile = useIsMobile();
+
+  useMoveScrollTop();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -160,8 +163,8 @@ export default function GlobalLayout() {
       <main className="m-auto min-h-screen w-full flex-1">
         <Outlet />
       </main>
-      <footer className="border-t bg-gray-800 py-10 text-center text-white">
-        @copyright
+      <footer className="border-t border-gray-200 bg-gray-200 py-10 text-center">
+        © 2026 Moxen Project. All rights reserved.
       </footer>
     </div>
   );

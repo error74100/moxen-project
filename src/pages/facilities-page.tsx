@@ -1,4 +1,15 @@
 import FacilitiesBg from "@/assets/images/facilities_bg.jpg";
+import FacilitiesIndividualBg from "@/assets/images/facilities_bg.jpg";
+import FacilitiesPublicBg from "@/assets/images/facilities_bg.jpg";
+import CtaSection from "@/components/layout/cta-section";
+import { Card } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export default function FacilitiesPage() {
   return (
@@ -22,41 +33,69 @@ export default function FacilitiesPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl space-y-20 px-6 py-20">
-        <div className="grid items-center gap-10 md:grid-cols-2">
-          <div>
-            <h2 className="mb-4 text-2xl font-semibold md:text-3xl">
-              왜 이 서비스를 만들었나요?
-            </h2>
-            <p className="text-muted-foreground leading-relaxed">
-              우리는 사용자들이 더 편리하게 서비스를 이용할 수 있도록 직관적이고
-              효율적인 플랫폼을 만들고자 했습니다. 복잡한 과정은 줄이고, 핵심
-              가치에 집중했습니다.
-            </p>
-          </div>
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <h2 className="mb-10 text-2xl font-semibold md:text-3xl">개인 시설</h2>
 
-          <div className="overflow-hidden rounded-2xl shadow-lg">
-            <img
-              src="https://images.unsplash.com/photo-1551434678-e076c223a692"
-              alt="서비스 설명"
-              className="h-full w-full object-cover"
-            />
-          </div>
-        </div>
+        <Carousel className="w-full">
+          <CarouselContent>
+            <CarouselItem className="radius-0 basis-full">
+              <Card className="overflow-hidden rounded-none p-0">
+                <div
+                  className="h-[40vh] w-full bg-cover bg-center"
+                  style={{ backgroundImage: `url(${FacilitiesIndividualBg})` }}
+                />
+              </Card>
+            </CarouselItem>
 
-        <div className="space-y-10 text-center">
-          <h2 className="text-2xl font-semibold md:text-3xl">핵심 기능</h2>
+            <CarouselItem className="basis-full">
+              <Card className="overflow-hidden rounded-none p-0">
+                <div
+                  className="h-[40vh] w-full bg-cover bg-center"
+                  style={{ backgroundImage: `url(${FacilitiesIndividualBg})` }}
+                />
+              </Card>
+            </CarouselItem>
+          </CarouselContent>
 
-          <div className="grid gap-8 md:grid-cols-3">
-            <div className="bg-card rounded-2xl border p-6 shadow-sm transition hover:shadow-md">
-              <h3 className="mb-3 text-lg font-semibold">111</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                222
-              </p>
-            </div>
-          </div>
+          <CarouselPrevious className="left-4" />
+          <CarouselNext className="right-4" />
+        </Carousel>
+      </section>
+
+      <section className="bg-gray-50 pt-20 pb-40">
+        <div className="mx-auto max-w-6xl px-6">
+          <h2 className="mb-10 text-2xl font-semibold md:text-3xl">
+            공용 시설
+          </h2>
+
+          <Carousel className="w-full">
+            <CarouselContent>
+              <CarouselItem className="radius-0 basis-full">
+                <Card className="overflow-hidden rounded-none p-0">
+                  <div
+                    className="h-[40vh] w-full bg-cover bg-center"
+                    style={{ backgroundImage: `url(${FacilitiesPublicBg})` }}
+                  />
+                </Card>
+              </CarouselItem>
+
+              <CarouselItem className="basis-full">
+                <Card className="overflow-hidden rounded-none p-0">
+                  <div
+                    className="h-[40vh] w-full bg-cover bg-center"
+                    style={{ backgroundImage: `url(${FacilitiesPublicBg})` }}
+                  />
+                </Card>
+              </CarouselItem>
+            </CarouselContent>
+
+            <CarouselPrevious className="left-4" />
+            <CarouselNext className="right-4" />
+          </Carousel>
         </div>
       </section>
+
+      <CtaSection />
     </div>
   );
 }
