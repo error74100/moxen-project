@@ -1,9 +1,12 @@
 import EnvironmentBg from "@/assets/images/environment_bg.jpg";
+import EnvironmentBg01 from "@/assets/images/facilities_bg.jpg";
+import EnvironmentBg02 from "@/assets/images/map_bg.jpg";
+import CtaSection from "@/components/layout/cta-section";
 
 export default function EnvironmentPage() {
   return (
     <div className="bg-background text-foreground min-h-screen">
-      <section className="relative h-[400px] w-full overflow-hidden md:h-[500px]">
+      <section className="relative h-100 w-full overflow-hidden md:h-125">
         <img
           src={EnvironmentBg}
           alt="주변환경"
@@ -22,41 +25,82 @@ export default function EnvironmentPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl space-y-20 px-6 py-20">
-        <div className="grid items-center gap-10 md:grid-cols-2">
+      <section className="container mx-auto space-y-20 px-6 py-20">
+        <div className="grid items-center gap-5 md:grid-cols-2">
           <div>
             <h2 className="mb-4 text-2xl font-semibold md:text-3xl">
-              왜 이 서비스를 만들었나요?
+              주변환경
             </h2>
-            <p className="text-muted-foreground leading-relaxed">
-              우리는 사용자들이 더 편리하게 서비스를 이용할 수 있도록 직관적이고
-              효율적인 플랫폼을 만들고자 했습니다. 복잡한 과정은 줄이고, 핵심
-              가치에 집중했습니다.
-            </p>
+            <ul className="text-muted-foreground space-y-1 leading-relaxed break-keep">
+              <li className="flex">
+                <span className="mr-2">-</span>
+                <span>
+                  주변에도 소음을 유발하는 영업장이 없어서 조용합니다.
+                </span>
+              </li>
+
+              <li className="flex">
+                <span className="mr-2">-</span>
+                <span>
+                  1층에 편의점과 커피 전문점 입점해있으며 1분거리 수협이 있어서
+                  생활하기 편리한 곳입니다.
+                </span>
+              </li>
+            </ul>
           </div>
 
           <div className="overflow-hidden rounded-2xl shadow-lg">
             <img
-              src="https://images.unsplash.com/photo-1551434678-e076c223a692"
+              src={EnvironmentBg01}
               alt="서비스 설명"
-              className="h-full w-full object-cover"
+              className="h-[40vh] w-full object-cover transition-transform duration-300 hover:scale-105"
             />
           </div>
         </div>
 
-        <div className="space-y-10 text-center">
-          <h2 className="text-2xl font-semibold md:text-3xl">핵심 기능</h2>
+        <div className="grid items-center gap-5 border-t py-20 md:grid-cols-2">
+          <div className="order-2 overflow-hidden rounded-2xl shadow-lg md:order-1">
+            <img
+              src={EnvironmentBg02}
+              alt="서비스 설명"
+              className="h-[40vh] w-full object-cover transition-transform duration-300 hover:scale-105"
+            />
+          </div>
 
-          <div className="grid gap-8 md:grid-cols-3">
-            <div className="bg-card rounded-2xl border p-6 shadow-sm transition hover:shadow-md">
-              <h3 className="mb-3 text-lg font-semibold">111</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                222
-              </p>
-            </div>
+          <div className="order-1 text-left md:order-2 md:text-right">
+            <h2 className="mb-4 text-2xl font-semibold md:text-3xl">
+              교통환경
+            </h2>
+            <ul className="text-muted-foreground space-y-1 leading-relaxed break-keep">
+              <li className="flex justify-start md:justify-end">
+                <span className="mr-2">-</span>
+                <span>노량진역 1,9호선에서 5분거리.</span>
+              </li>
+              <li className="flex justify-start md:justify-end">
+                <span className="mr-2">-</span>
+                <span>삼익 수협 마트바로 뒤.</span>
+              </li>
+              <li className="flex flex-col justify-start md:justify-end">
+                <p className="text-foreground pt-2 font-semibold">＊버스노선</p>
+                <p className="pt-1">
+                  <span className="rounded bg-blue-600 p-1 text-xs text-white">
+                    일반
+                  </span>{" "}
+                  100, 200, 300
+                </p>
+                <p className="pt-1">
+                  <span className="rounded bg-green-600 p-1 text-xs text-white">
+                    좌석
+                  </span>{" "}
+                  1000, 2022
+                </p>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
+
+      <CtaSection />
     </div>
   );
 }

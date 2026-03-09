@@ -6,7 +6,7 @@ import IntroBg02 from "@/assets/images/environment_bg.jpg";
 export default function AboutPage() {
   return (
     <div className="bg-background text-foreground min-h-screen">
-      <section className="relative h-[400px] w-full overflow-hidden md:h-[500px]">
+      <section className="relative h-100 w-full overflow-hidden md:h-125">
         <img
           src={AboutBg}
           alt="소개"
@@ -25,7 +25,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl space-y-20 px-6 py-20">
+      <section className="container mx-auto space-y-20 px-6 py-20">
         <div className="grid items-center gap-10 md:grid-cols-2">
           <div>
             <h2 className="mb-4 text-2xl font-semibold md:text-3xl">소개</h2>

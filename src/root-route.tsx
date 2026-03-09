@@ -12,6 +12,8 @@ import SignInPage from "./pages/sign-in-page";
 import ForgetPasswordPage from "./pages/forget-password-page";
 import ResetPasswordPage from "./pages/reset-password-page";
 import ProfileDetailPage from "./pages/profile-detail-page";
+import QnaDetailPage from "./pages/qna-detail-page";
+import QnaWritePage from "./pages/qna-write-page";
 
 export default function RootRoute() {
   return (
@@ -24,6 +26,8 @@ export default function RootRoute() {
         <Route path="/environment" element={<EnvironmentPage />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/qna" element={<QnaPage />} />
+        <Route path="/qna-write" element={<QnaWritePage />} />
+        <Route path="/qna/:id" element={<QnaDetailPage />} />
 
         <Route path="/sign-up" element={<SignUpPage />} />
         <Route path="/sign-in" element={<SignInPage />} />

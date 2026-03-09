@@ -1,20 +1,19 @@
 import QnaBg from "@/assets/images/qna_bg.jpg";
+import CtaSection from "@/components/layout/cta-section";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  ChevronFirst,
+  ChevronLast,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { useNavigate } from "react-router";
 
 const faqs = [
   {
@@ -35,26 +34,26 @@ const inquiries = [
   {
     id: 1,
     title:
-      "입실 문의드립니다.입실 문의드립니다.입실 문의드립니다.입실 문의드립니다.입실 문의드립니다.입실 문의드립니다.입실 문의드립니다.입실 문의드립니다.입실 문의드립니다.입실 문의드립니다.입실 문의드립니다.",
-    content: "이번 달에 입실 가능한 방이 있을까요?",
-    author: "김철수",
-    date: "2026-03-06",
-    answered: true,
+      "방 가격 문의드립니다. 단기 입주 가능한가요?방 가격 문의드립니다. 단기 입주 가능한가요?방 가격 문의드립니다. 단기 입주 가능한가요?방 가격 문의드립니다. 단기 입주 가능한가요?방 가격 문의드립니다. 단기 입주 가능한가요?",
+    author: "홍길동",
+    date: "2026-03-09",
+    status: "답변완료",
   },
   {
     id: 2,
-    title: "방 가격 문의",
-    content: "1인실 가격이 어떻게 되나요?",
-    author: "이영희",
-    date: "2026-03-05",
-    answered: false,
+    title: "공용주방 사용 가능한 시간대가 궁금합니다",
+    author: "김철수",
+    date: "2026-03-08",
+    status: "대기",
   },
 ];
 
 export default function QnaPage() {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-background text-foreground min-h-screen">
-      <section className="relative h-[400px] w-full overflow-hidden md:h-[500px]">
+      <section className="relative h-100 w-full overflow-hidden md:h-125">
         <img
           src={QnaBg}
           alt="입실문의"
@@ -73,86 +72,121 @@ export default function QnaPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl space-y-20 px-6 py-20">
-        <div className="space-y-10 text-center">
-          <h2 className="text-2xl font-semibold md:text-3xl">자주 묻는 질문</h2>
-
-          <div className="rounded-xl border bg-white">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-center">제목</TableHead>
-                  <TableHead className="w-[120px] text-center">
-                    작성자
-                  </TableHead>
-                  <TableHead className="w-[140px] text-center">
-                    작성일
-                  </TableHead>
-                  <TableHead className="w-[120px] text-center">답변</TableHead>
-                </TableRow>
-              </TableHeader>
-
-              <TableBody>
-                {inquiries.map((item) => (
-                  <TableRow
-                    key={item.id}
-                    className="cursor-pointer hover:bg-gray-50"
-                  >
-                    <TableCell className="line-clamp-1 text-gray-600">
-                      {item.title}
-                    </TableCell>
-
-                    <TableCell>{item.author}</TableCell>
-
-                    <TableCell>{item.date}</TableCell>
-
-                    <TableCell className="text-center">
-                      {item.answered ? (
-                        <Badge>답변완료</Badge>
-                      ) : (
-                        <Badge variant="secondary">대기중</Badge>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+      <section className="container mx-auto space-y-20 px-6 pt-10 pb-20 md:pt-30">
+        <div className="mb-15 space-y-10 text-center">
+          <h2 className="text-2xl font-semibold md:text-3xl">입실문의</h2>
+          <p className="text-muted-foreground mx-auto max-w-2xl">
+            문의글 확인 후에 빠른 시일내에 답변드리도록 하겠습니다.
+          </p>
+          <div className="text-right">
+            <Button
+              className="cursor-pointer"
+              onClick={() => navigate("/qna-write")}
+            >
+              문의하기
+            </Button>
           </div>
 
-          {/* 페이징 */}
+          <div className="w-full overflow-hidden border-b">
+            <ul className="hidden grid-cols-[60px_1fr_120px_120px_120px] bg-gray-100 text-sm font-semibold md:grid">
+              <li className="py-3 text-center">번호</li>
+              <li className="py-3">제목</li>
+              <li className="py-3 text-center">작성자</li>
+              <li className="py-3 text-center">작성일</li>
+              <li className="py-3 text-center">답변상태</li>
+            </ul>
+
+            <ul>
+              {inquiries.map((item) => (
+                <li
+                  key={item.id}
+                  className="border-t p-3 hover:bg-gray-50 md:grid md:grid-cols-[60px_1fr_120px_120px_120px] md:items-center md:p-0"
+                >
+                  {/* 모바일 1줄 : 번호 + 제목 */}
+                  <div className="flex items-center gap-2 md:contents">
+                    <span className="text-sm text-gray-500 md:block md:py-3 md:text-center">
+                      {item.id}
+                    </span>
+
+                    <span
+                      className="flex-1 cursor-pointer truncate text-left font-medium hover:underline md:py-3"
+                      onClick={() => navigate("/qna/1")}
+                    >
+                      {item.title}
+                    </span>
+                  </div>
+
+                  {/* 모바일 2줄 : 작성자 / 작성일 / 상태 */}
+                  <div className="mt-1 flex gap-3 text-sm text-gray-500 md:mt-0 md:contents">
+                    <span className="md:py-3 md:text-center">
+                      {item.author}
+                    </span>
+                    <span className="md:py-3 md:text-center">{item.date}</span>
+
+                    <span className="ml-auto md:mx-auto md:py-3 md:text-center">
+                      {item.status === "답변완료" ? (
+                        <span className="rounded bg-green-100 px-2 py-0.5 text-sm text-green-700">
+                          답변완료
+                        </span>
+                      ) : (
+                        <span className="rounded bg-gray-200 px-2 py-0.5 text-sm text-gray-700">
+                          대기
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <div className="mt-8 flex justify-center gap-2">
-            <Button variant="outline">이전</Button>
+            <Button variant="outline">
+              <ChevronFirst />
+            </Button>
+            <Button variant="outline">
+              <ChevronLeft />
+            </Button>
             <Button variant="default">1</Button>
             <Button variant="outline">2</Button>
             <Button variant="outline">3</Button>
-            <Button variant="outline">다음</Button>
+            <Button variant="outline">
+              <ChevronRight />
+            </Button>
+            <Button variant="outline">
+              <ChevronLast />
+            </Button>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl space-y-20 px-6 py-20">
-        <div className="space-y-10 text-center">
-          <h2 className="text-2xl font-semibold md:text-3xl">자주 묻는 질문</h2>
+      <section className="space-y-20 bg-gray-50 px-6 pt-15 pb-20 md:pt-20 md:pb-40">
+        <div className="container mx-auto px-6">
+          <div className="space-y-10 text-center">
+            <h2 className="text-2xl font-semibold md:text-3xl">
+              자주 묻는 질문
+            </h2>
 
-          <Accordion
-            type="single"
-            collapsible
-            className="border-t border-b border-gray-800"
-          >
-            {faqs.map((faq, i) => (
-              <AccordionItem key={i} value={`item-${i}`}>
-                <AccordionTrigger className="cursor-pointer justify-between text-left text-lg font-semibold [&_svg]:h-6 [&_svg]:w-6">
-                  <p>Q.</p>
-                  <p className="flex-1 text-left">{faq.q}</p>
-                </AccordionTrigger>
+            <Accordion
+              type="single"
+              collapsible
+              className="border-t border-b border-gray-800"
+            >
+              {faqs.map((faq, i) => (
+                <AccordionItem key={i} value={`item-${i}`}>
+                  <AccordionTrigger className="cursor-pointer justify-between text-left text-lg font-semibold [&_svg]:h-6 [&_svg]:w-6">
+                    <p>Q.</p>
+                    <p className="flex-1 text-left">{faq.q}</p>
+                  </AccordionTrigger>
 
-                <AccordionContent className="flex gap-4 pt-2 text-left text-lg leading-relaxed text-gray-600">
-                  <p>A.</p>
-                  <p>{faq.a}</p>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+                  <AccordionContent className="flex gap-4 pt-2 text-left text-lg leading-relaxed text-gray-600">
+                    <p>A.</p>
+                    <p>{faq.a}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
         </div>
       </section>
     </div>

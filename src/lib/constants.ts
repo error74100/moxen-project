@@ -6,3 +6,5 @@ export const gnbMenus = [
   { name: "오시는길", path: "/map" },
   { name: "입실문의", path: "/qna" },
 ];
+
+export const kakaoMapApiKey = "0d94dde4b6989131a4c02bb9f4f3e8ab";

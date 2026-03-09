@@ -8,7 +8,7 @@ import InformationBg04 from "@/assets/images/information_intro_03.jpg";
 export default function InformationPage() {
   return (
     <div className="bg-background text-foreground min-h-screen">
-      <section className="relative h-[400px] w-full overflow-hidden md:h-[500px]">
+      <section className="relative h-100 w-full overflow-hidden md:h-125">
         <img
           src={InformationBg}
           alt="주변환경"
@@ -27,7 +27,7 @@ export default function InformationPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl space-y-20 px-6 py-20">
+      <section className="container mx-auto space-y-20 px-6 py-20">
         <div className="grid items-center gap-5 md:grid-cols-2">
           <div>
             <h2 className="mb-4 text-2xl font-semibold md:text-3xl">

@@ -1,6 +1,9 @@
 import FacilitiesBg from "@/assets/images/facilities_bg.jpg";
-import FacilitiesIndividualBg from "@/assets/images/facilities_bg.jpg";
-import FacilitiesPublicBg from "@/assets/images/facilities_bg.jpg";
+import FacilitiesIndividualBg01 from "@/assets/images/room_single_a.jpg";
+import FacilitiesIndividualBg02 from "@/assets/images/room_single_b.jpg";
+import FacilitiesIndividualBg03 from "@/assets/images/room_deluxe_a.jpg";
+import FacilitiesPublicBg01 from "@/assets/images/facilities_public_bg_01.jpeg";
+import FacilitiesPublicBg02 from "@/assets/images/facilities_public_bg_02.jpeg";
 import CtaSection from "@/components/layout/cta-section";
 import { Card } from "@/components/ui/card";
 import {
@@ -14,7 +17,7 @@ import {
 export default function FacilitiesPage() {
   return (
     <div className="bg-background text-foreground min-h-screen">
-      <section className="relative h-[400px] w-full overflow-hidden md:h-[500px]">
+      <section className="relative h-100 w-full overflow-hidden md:h-125">
         <img
           src={FacilitiesBg}
           alt="시설보기"
@@ -33,7 +36,7 @@ export default function FacilitiesPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-20">
+      <section className="container mx-auto px-6 pt-20 pb-40">
         <h2 className="mb-10 text-2xl font-semibold md:text-3xl">개인 시설</h2>
 
         <Carousel className="w-full">
@@ -42,7 +45,9 @@ export default function FacilitiesPage() {
               <Card className="overflow-hidden rounded-none p-0">
                 <div
                   className="h-[40vh] w-full bg-cover bg-center"
-                  style={{ backgroundImage: `url(${FacilitiesIndividualBg})` }}
+                  style={{
+                    backgroundImage: `url(${FacilitiesIndividualBg01})`,
+                  }}
                 />
               </Card>
             </CarouselItem>
@@ -51,19 +56,32 @@ export default function FacilitiesPage() {
               <Card className="overflow-hidden rounded-none p-0">
                 <div
                   className="h-[40vh] w-full bg-cover bg-center"
-                  style={{ backgroundImage: `url(${FacilitiesIndividualBg})` }}
+                  style={{
+                    backgroundImage: `url(${FacilitiesIndividualBg02})`,
+                  }}
+                />
+              </Card>
+            </CarouselItem>
+
+            <CarouselItem className="basis-full">
+              <Card className="overflow-hidden rounded-none p-0">
+                <div
+                  className="h-[40vh] w-full bg-cover bg-center"
+                  style={{
+                    backgroundImage: `url(${FacilitiesIndividualBg03})`,
+                  }}
                 />
               </Card>
             </CarouselItem>
           </CarouselContent>
 
-          <CarouselPrevious className="left-4" />
-          <CarouselNext className="right-4" />
+          <CarouselPrevious className="left-4 rounded-none border-none" />
+          <CarouselNext className="right-4 rounded-none border-none" />
         </Carousel>
       </section>
 
       <section className="bg-gray-50 pt-20 pb-40">
-        <div className="mx-auto max-w-6xl px-6">
+        <div className="container mx-auto px-6">
           <h2 className="mb-10 text-2xl font-semibold md:text-3xl">
             공용 시설
           </h2>
@@ -74,7 +92,7 @@ export default function FacilitiesPage() {
                 <Card className="overflow-hidden rounded-none p-0">
                   <div
                     className="h-[40vh] w-full bg-cover bg-center"
-                    style={{ backgroundImage: `url(${FacilitiesPublicBg})` }}
+                    style={{ backgroundImage: `url(${FacilitiesPublicBg01})` }}
                   />
                 </Card>
               </CarouselItem>
@@ -83,14 +101,14 @@ export default function FacilitiesPage() {
                 <Card className="overflow-hidden rounded-none p-0">
                   <div
                     className="h-[40vh] w-full bg-cover bg-center"
-                    style={{ backgroundImage: `url(${FacilitiesPublicBg})` }}
+                    style={{ backgroundImage: `url(${FacilitiesPublicBg02})` }}
                   />
                 </Card>
               </CarouselItem>
             </CarouselContent>
 
-            <CarouselPrevious className="left-4" />
-            <CarouselNext className="right-4" />
+            <CarouselPrevious className="left-4 rounded-none border-none" />
+            <CarouselNext className="right-4 rounded-none border-none" />
           </Carousel>
         </div>
       </section>
