@@ -12,8 +12,10 @@ import {
   SheetTrigger,
 } from "../ui/sheet";
 import { gnbMenus } from "@/lib/constants";
-import { useIsMobile } from "@/hooks/utills/use-is-mobile";
-import { useMoveScrollTop } from "@/hooks/utills/use-move-scrollTop";
+import { useIsMobile } from "@/utills/use-is-mobile";
+import { useMoveScrollTop } from "@/utills/use-move-scrollTop";
+import { useSession } from "@/store/session";
+import ProfileButton from "./profile-button";
 
 const headerBgPages = [
   "/sign-in",
@@ -32,6 +34,8 @@ export default function GlobalLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isMobile = useIsMobile();
+
+  const session = useSession();
 
   useMoveScrollTop();
 
@@ -72,12 +76,8 @@ export default function GlobalLayout() {
                 {menu.name}
               </NavLink>
             ))}
-            <Link
-              to={"/sign-in"}
-              className="inline-flex cursor-pointer rounded-full p-1"
-            >
-              <UserRound className="h-5 w-5 hover:text-blue-400" />
-            </Link>
+
+            <ProfileButton />
           </div>
           {/* //pc menu */}
 

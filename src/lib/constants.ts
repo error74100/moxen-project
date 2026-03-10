@@ -7,4 +7,20 @@ export const gnbMenus = [
   { name: "입실문의", path: "/qna" },
 ];
 
-export const kakaoMapApiKey = "0d94dde4b6989131a4c02bb9f4f3e8ab";
+export const QUERY_KEYS = {
+  profile: {
+    all: ["profile"],
+    list: ["profile", "list"],
+    byId: (userId: string) => ["profile", "byId", userId],
+  },
+  post: {
+    all: ["post"],
+    list: ["post", "list"],
+    userList: (userId: string) => ["post", "userList", userId],
+    byId: (postId: number) => ["post", "byId", postId],
+  },
+  comment: {
+    all: ["comment"],
+    post: (postId: number) => ["comment", "post", postId],
+  },
+};

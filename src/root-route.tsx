@@ -33,7 +33,7 @@ export default function RootRoute() {
         <Route path="/sign-in" element={<SignInPage />} />
         <Route path="/forget-password" element={<ForgetPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/profile-detail" element={<ProfileDetailPage />} />
+        <Route path="/profile/:userId" element={<ProfileDetailPage />} />
 
         <Route path="*" element={<Navigate to={"/"} />} />
 

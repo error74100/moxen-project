@@ -1,10 +1,73 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import IconGoogle from "@/assets/images/icon_google.svg";
-import IconKakao from "@/assets/images/icon_kakao.svg";
+import IconGithub from "@/assets/images/icon_github.png";
+import { useState } from "react";
+import { useSignInWithPassword } from "@/hooks/mutations/auth/use-sign-in-with-password";
+import { generateErrorMessage } from "@/lib/error";
+import { toast } from "sonner";
+import { useSignInWithOAuth } from "@/hooks/mutations/auth/use-sign-in-with-oauth";
 
 export default function SignInPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  const { mutate: signInWithPassword, isPending: isSignInWithPasswordPending } =
+    useSignInWithPassword({
+      onSuccess: () => {
+        toast.success("로그인 되었습니다.", {
+          position: "top-center",
+        });
+
+        setEmail("");
+        setPassword("");
+        navigate("/");
+      },
+      onError: (error) => {
+        const message = generateErrorMessage(error);
+
+        toast.error(message, {
+          position: "top-center",
+        });
+
+        setPassword("");
+      },
+    });
+
+  const { mutate: signInWithOAuth, isPending: isSignInWithOAuthPending } =
+    useSignInWithOAuth({
+      onError: (error) => {
+        const message = generateErrorMessage(error);
+
+        toast.error(message, {
+          position: "top-center",
+        });
+      },
+    });
+
+  const handleSignInWithPasswordClick = () => {
+    if (email.trim() === "") return;
+    if (password.trim() === "") return;
+
+    signInWithPassword({
+      email,
+      password,
+    });
+  };
+
+  const handleSignInWithGoogleClick = () => {
+    signInWithOAuth("google");
+  };
+
+  const handleSignInWithGithubClick = () => {
+    signInWithOAuth("github");
+  };
+
+  const isPending = isSignInWithPasswordPending || isSignInWithOAuthPending;
+
   return (
     <div className="bg-muted/40 flex min-h-screen items-center justify-center px-4 py-20">
       <div className="flex w-full max-w-md flex-col gap-6 rounded-2xl bg-white p-5 shadow-lg md:p-8">
@@ -19,6 +82,11 @@ export default function SignInPage() {
           <div className="flex flex-col gap-1">
             <span className="text-sm font-medium">이메일</span>
             <Input
+              disabled={isPending}
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
               type="email"
               placeholder="example@email.com"
               className="py-6"
@@ -27,10 +95,25 @@ export default function SignInPage() {
 
           <div className="flex flex-col gap-1">
             <span className="text-sm font-medium">비밀번호</span>
-            <Input type="password" placeholder="password" className="py-6" />
+            <Input
+              disabled={isPending}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+              type="password"
+              placeholder="password"
+              className="py-6"
+            />
           </div>
 
-          <Button className="my-2 w-full cursor-pointer py-6">로그인</Button>
+          <Button
+            disabled={isPending}
+            onClick={handleSignInWithPasswordClick}
+            className="my-2 w-full cursor-pointer py-6"
+          >
+            로그인
+          </Button>
         </div>
 
         <div className="relative">
@@ -45,13 +128,23 @@ export default function SignInPage() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <Button className="w-full cursor-pointer py-6" variant={"outline"}>
+          <Button
+            disabled={isPending}
+            onClick={handleSignInWithGoogleClick}
+            className="w-full cursor-pointer py-6"
+            variant={"outline"}
+          >
             <img src={IconGoogle} alt="google" className="h-6" />
             Google 로그인
           </Button>
-          <Button className="w-full cursor-pointer py-6" variant={"outline"}>
-            <img src={IconKakao} alt="kakao" className="h-6" />
-            카카오 로그인
+          <Button
+            disabled={isPending}
+            onClick={handleSignInWithGithubClick}
+            className="w-full cursor-pointer py-6"
+            variant={"outline"}
+          >
+            <img src={IconGithub} alt="kakao" className="h-6" />
+            Github 로그인
           </Button>
         </div>
 
