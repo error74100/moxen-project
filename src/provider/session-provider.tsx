@@ -1,3 +1,4 @@
+import { useProfileData } from "@/hooks/queries/use-profile-data";
 import supabase from "@/lib/supabase";
 import { useIsSessionLoaded, useSession, useSetSession } from "@/store/session";
 import { useEffect, type ReactNode } from "react";
@@ -7,11 +8,14 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
   const setSession = useSetSession();
   const isSessionLoaded = useIsSessionLoaded();
 
-  // const {
-  //   data: profile,
-  //   isLoading: isProfileLoading,
-  //   isPending,
-  // } = useProfileData(session?.user.id);
+  const {
+    data: profile,
+    isLoading: isProfileLoading,
+    isPending,
+  } = useProfileData({
+    userId: session?.user.id,
+    userEmail: session?.user.email,
+  });
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
