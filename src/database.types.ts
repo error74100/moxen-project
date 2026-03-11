@@ -61,7 +61,7 @@ export type Database = {
             foreignKeyName: "comment_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
-            referencedRelation: "post"
+            referencedRelation: "qna"
             referencedColumns: ["id"]
           },
           {
@@ -97,42 +97,7 @@ export type Database = {
             foreignKeyName: "like_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
-            referencedRelation: "post"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      post: {
-        Row: {
-          author_id: string
-          content: string
-          created_at: string
-          id: number
-          image_urls: string[] | null
-          like_count: number
-        }
-        Insert: {
-          author_id?: string
-          content: string
-          created_at?: string
-          id?: number
-          image_urls?: string[] | null
-          like_count?: number
-        }
-        Update: {
-          author_id?: string
-          content?: string
-          created_at?: string
-          id?: number
-          image_urls?: string[] | null
-          like_count?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "post_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "profile"
+            referencedRelation: "qna"
             referencedColumns: ["id"]
           },
         ]
@@ -163,6 +128,47 @@ export type Database = {
           nickname?: string
         }
         Relationships: []
+      }
+      qna: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: number
+          image_urls: string[] | null
+          like_count: number
+          reply_status: string
+          title: string
+        }
+        Insert: {
+          author_id?: string
+          content: string
+          created_at?: string
+          id?: number
+          image_urls?: string[] | null
+          like_count?: number
+          reply_status?: string
+          title: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: number
+          image_urls?: string[] | null
+          like_count?: number
+          reply_status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

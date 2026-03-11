@@ -2,29 +2,48 @@ import QnaBg from "@/assets/images/qna_bg.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Pen, TextAlignStart, X } from "lucide-react";
+import { useCreateQna } from "@/hooks/mutations/qna/use-create-qna";
+import { useSession } from "@/store/session";
+import { Pen, X } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
-
-const inquiries = [
-  {
-    id: 1,
-    title:
-      "방 가격 문의드립니다. 단기 입주 가능한가요?방 가격 문의드립니다. 단기 입주 가능한가요?방 가격 문의드립니다. 단기 입주 가능한가요?방 가격 문의드립니다. 단기 입주 가능한가요?방 가격 문의드립니다. 단기 입주 가능한가요?",
-    author: "홍길동",
-    date: "2026-03-09",
-    status: "답변완료",
-  },
-  {
-    id: 2,
-    title: "공용주방 사용 가능한 시간대가 궁금합니다",
-    author: "김철수",
-    date: "2026-03-08",
-    status: "대기",
-  },
-];
+import { toast } from "sonner";
 
 export default function QnaDetailPage() {
   const navigate = useNavigate();
+  const session = useSession();
+
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  const { mutate: createQna, isPending: isCreateQnaPending } = useCreateQna({
+    onSuccess: () => {
+      toast.message("문의글이 등록되었습니다.", {
+        position: "top-center",
+      });
+      navigate("/qna", { replace: true });
+    },
+    onError: (error) => {
+      toast.error("문의글 등록에 실패했습니다.", {
+        position: "top-center",
+      });
+    },
+  });
+
+  const handleSaveQnaClick = () => {
+    if (title.trim() === "" || content.trim() === "") {
+      toast.message("제목 및 내용을 입력해주세요.", {
+        position: "top-center",
+      });
+
+      return;
+    }
+
+    createQna({
+      title,
+      content,
+    });
+  };
 
   return (
     <div className="bg-background text-foreground min-h-screen">
@@ -54,12 +73,19 @@ export default function QnaDetailPage() {
           <div className="overflow-hidden border-t border-black text-left">
             <div className="border-b p-4 md:p-5">
               <h2 className="text-lg font-semibold md:text-xl">
-                <Input placeholder="문의제목" className="py-4" />
+                <Input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="문의제목"
+                  className="py-4"
+                />
               </h2>
             </div>
 
             <div className="min-h-45 p-4 leading-relaxed whitespace-pre-line md:p-6">
               <Textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
                 className="h-[30vh] resize-none py-4 md:h-[40vh]"
                 placeholder="문의내용"
               />
@@ -76,7 +102,11 @@ export default function QnaDetailPage() {
               <X />
               취소
             </Button>
-            <Button size="lg" className="cursor-pointer">
+            <Button
+              onClick={handleSaveQnaClick}
+              size="lg"
+              className="cursor-pointer"
+            >
               <Pen />
               등록
             </Button>

@@ -1,5 +1,6 @@
 import QnaBg from "@/assets/images/qna_bg.jpg";
 import CtaSection from "@/components/layout/cta-section";
+import QnaWriteButton from "@/components/qna/qna-write-button";
 import {
   Accordion,
   AccordionContent,
@@ -79,12 +80,7 @@ export default function QnaPage() {
             문의글 확인 후에 빠른 시일내에 답변드리도록 하겠습니다.
           </p>
           <div className="text-right">
-            <Button
-              className="cursor-pointer"
-              onClick={() => navigate("/qna-write")}
-            >
-              문의하기
-            </Button>
+            <QnaWriteButton />
           </div>
 
           <div className="w-full overflow-hidden border-b">

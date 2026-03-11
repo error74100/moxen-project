@@ -13,14 +13,14 @@ export const QUERY_KEYS = {
     list: ["profile", "list"],
     byId: (userId: string) => ["profile", "byId", userId],
   },
-  post: {
-    all: ["post"],
-    list: ["post", "list"],
-    userList: (userId: string) => ["post", "userList", userId],
-    byId: (postId: number) => ["post", "byId", postId],
+  qna: {
+    all: ["qna"],
+    list: ["qna", "list"],
+    userList: (userId: string) => ["qna", "userList", userId],
+    byId: (postId: number) => ["qna", "byId", postId],
   },
   comment: {
     all: ["comment"],
-    post: (postId: number) => ["comment", "post", postId],
+    post: (postId: number) => ["comment", "qna", postId],
   },
 };
