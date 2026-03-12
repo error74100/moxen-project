@@ -110,8 +110,7 @@ export default function QnaDetailPage() {
             <div className="border-t bg-gray-50 p-4 md:p-6">
               <div className="mb-3 font-semibold">관리자 답변</div>
               <div className="text-sm leading-relaxed whitespace-pre-line md:text-base">
-                문의 감사합니다. 현재 단기 입주 가능하며 공용주방, 세탁시설 모두
-                이용 가능합니다. 자세한 사항은 전화 문의 부탁드립니다.
+                담당자 확인중입니다. 빠른 시일내에 답변드리겠습니다.
               </div>
             </div>
           </div>
