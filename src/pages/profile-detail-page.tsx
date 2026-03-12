@@ -52,15 +52,13 @@ export default function ProfileDetailPage() {
                     alt=""
                   />
                   <div className="flex flex-col items-center gap-2">
-                    <div className="text-muted-foreground">
+                    <div className="text-foreground">
                       - email: {profile!.email}
                     </div>
-                    <div className="text-xl font-bold">
+                    <div className="text-foreground">
                       - nickname: {profile!.nickname}
                     </div>
-                    <div className="text-muted-foreground">
-                      - bio: {profile!.bio}
-                    </div>
+                    <div className="text-foreground">- bio: {profile!.bio}</div>
                   </div>
                   {/* {isMine && <EditProfileButton />} */}
                 </div>

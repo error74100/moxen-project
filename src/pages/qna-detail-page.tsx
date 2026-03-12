@@ -1,10 +1,69 @@
 import QnaBg from "@/assets/images/qna_bg.jpg";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { TextAlignStart } from "lucide-react";
-import { useNavigate } from "react-router";
+import { useDeleteQna } from "@/hooks/mutations/qna/use-delete-qna";
+import { useQnaByIdData } from "@/hooks/queries/use-qna-by-id-data";
+import { formatTime } from "@/lib/time";
+import { useSession } from "@/store/session";
+import { SquarePen, TextAlignStart, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router";
+import { toast } from "sonner";
 
 export default function QnaDetailPage() {
+  const params = useParams();
   const navigate = useNavigate();
+  const qnaId = Number(params.qnaId);
+  const type = "DETAIL";
+  const [isOpen, setIsOpen] = useState(false);
+  const session = useSession();
+
+  const {
+    data: qna,
+    isPending,
+    error,
+  } = useQnaByIdData({
+    qnaId,
+    type: type,
+  });
+
+  const { mutate: deleteQna, isPending: isDeleteQnaPending } = useDeleteQna({
+    onSuccess: () => {
+      const pathname = window.location.pathname;
+
+      toast.success("해당글이 삭제 되었습니다.", {
+        position: "top-center",
+      });
+
+      if (pathname.startsWith(`/qna/${qnaId}`)) {
+        navigate("/qna", { replace: true });
+      }
+    },
+    onError: (error) => {
+      toast.error("글 삭제에 실패했습니다", {
+        position: "top-center",
+      });
+    },
+  });
+
+  const userId = qna?.author_id;
+  const isMine = userId === session?.user.id;
+
+  if (error) return "qna error..";
+  if (isPending) return "loading..";
+
+  const handleDeleteQnaAction = () => {
+    deleteQna(qnaId);
+  };
 
   return (
     <div className="bg-background text-foreground min-h-screen">
@@ -33,21 +92,18 @@ export default function QnaDetailPage() {
 
           <div className="overflow-hidden border-t border-black text-left">
             <div className="border-b p-4 md:p-5">
-              <h2 className="text-lg font-semibold md:text-xl">
-                방 가격 문의드립니다. 단기 입주 가능한가요?
-              </h2>
+              <h2 className="text-lg font-semibold md:text-xl">{qna?.title}</h2>
             </div>
             <div className="flex flex-wrap gap-x-2 gap-y-1 border-b p-4 text-sm text-gray-500 md:gap-x-6 md:p-5 md:text-base">
-              <span>작성자: 홍길동</span>
-              <span>작성일: 2026-03-09</span>
+              <span>작성자: {qna?.author.nickname}</span>
+              <span>작성일: {formatTime(qna.created_at)}</span>
               <span className="rounded bg-green-100 px-2 py-0.5 text-xs leading-4.5 text-green-700 md:leading-5.5">
-                답변완료
+                {qna?.reply_status}
               </span>
             </div>
 
             <div className="min-h-45 p-4 leading-relaxed whitespace-pre-line md:p-6">
-              안녕하세요. 방 가격과 단기 입주 가능 여부가 궁금합니다. 공용시설
-              이용도 가능한지 문의드립니다. 감사합니다.
+              {qna?.content}
             </div>
 
             {/* 관리자 답변 */}
@@ -62,6 +118,7 @@ export default function QnaDetailPage() {
 
           <div className="mt-8 flex justify-center gap-2">
             <Button
+              disabled={isDeleteQnaPending}
               variant="outline"
               size="lg"
               onClick={() => navigate("/qna")}
@@ -70,9 +127,57 @@ export default function QnaDetailPage() {
               <TextAlignStart />
               목록보기
             </Button>
+            {isMine && (
+              <>
+                <Button
+                  disabled={isDeleteQnaPending}
+                  variant="default"
+                  size="lg"
+                  onClick={() =>
+                    navigate(`/qna-update/${qnaId}`, { replace: true })
+                  }
+                  className="cursor-pointer"
+                >
+                  <SquarePen />
+                  글수정
+                </Button>
+                <Button
+                  disabled={isDeleteQnaPending}
+                  variant="destructive"
+                  size="lg"
+                  onClick={() => setIsOpen(true)}
+                  className="cursor-pointer"
+                >
+                  <Trash2 />
+                  글삭제
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </section>
+
+      <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>글삭제</AlertDialogTitle>
+            <AlertDialogDescription>
+              해당글을 삭제 하시겠습니까?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="cursor-pointer">
+              취소
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="cursor-pointer"
+              onClick={handleDeleteQnaAction}
+            >
+              삭제
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

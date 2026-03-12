@@ -1,5 +1,5 @@
 import QnaBg from "@/assets/images/qna_bg.jpg";
-import CtaSection from "@/components/layout/cta-section";
+import QnaList from "@/components/qna/qna-list";
 import QnaWriteButton from "@/components/qna/qna-write-button";
 import {
   Accordion,
@@ -7,14 +7,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import {
-  ChevronFirst,
-  ChevronLast,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import { useNavigate } from "react-router";
 
 const faqs = [
   {
@@ -31,27 +23,7 @@ const faqs = [
   },
 ];
 
-const inquiries = [
-  {
-    id: 1,
-    title:
-      "방 가격 문의드립니다. 단기 입주 가능한가요?방 가격 문의드립니다. 단기 입주 가능한가요?방 가격 문의드립니다. 단기 입주 가능한가요?방 가격 문의드립니다. 단기 입주 가능한가요?방 가격 문의드립니다. 단기 입주 가능한가요?",
-    author: "홍길동",
-    date: "2026-03-09",
-    status: "답변완료",
-  },
-  {
-    id: 2,
-    title: "공용주방 사용 가능한 시간대가 궁금합니다",
-    author: "김철수",
-    date: "2026-03-08",
-    status: "대기",
-  },
-];
-
 export default function QnaPage() {
-  const navigate = useNavigate();
-
   return (
     <div className="bg-background text-foreground min-h-screen">
       <section className="relative h-100 w-full overflow-hidden md:h-125">
@@ -83,76 +55,7 @@ export default function QnaPage() {
             <QnaWriteButton />
           </div>
 
-          <div className="w-full overflow-hidden border-b">
-            <ul className="hidden grid-cols-[60px_1fr_120px_120px_120px] bg-gray-100 text-sm font-semibold md:grid">
-              <li className="py-3 text-center">번호</li>
-              <li className="py-3">제목</li>
-              <li className="py-3 text-center">작성자</li>
-              <li className="py-3 text-center">작성일</li>
-              <li className="py-3 text-center">답변상태</li>
-            </ul>
-
-            <ul>
-              {inquiries.map((item) => (
-                <li
-                  key={item.id}
-                  className="border-t p-3 hover:bg-gray-50 md:grid md:grid-cols-[60px_1fr_120px_120px_120px] md:items-center md:p-0"
-                >
-                  {/* 모바일 1줄 : 번호 + 제목 */}
-                  <div className="flex items-center gap-2 md:contents">
-                    <span className="text-sm text-gray-500 md:block md:py-3 md:text-center">
-                      {item.id}
-                    </span>
-
-                    <span
-                      className="flex-1 cursor-pointer truncate text-left font-medium hover:underline md:py-3"
-                      onClick={() => navigate("/qna/1")}
-                    >
-                      {item.title}
-                    </span>
-                  </div>
-
-                  {/* 모바일 2줄 : 작성자 / 작성일 / 상태 */}
-                  <div className="mt-1 flex gap-3 text-sm text-gray-500 md:mt-0 md:contents">
-                    <span className="md:py-3 md:text-center">
-                      {item.author}
-                    </span>
-                    <span className="md:py-3 md:text-center">{item.date}</span>
-
-                    <span className="ml-auto md:mx-auto md:py-3 md:text-center">
-                      {item.status === "답변완료" ? (
-                        <span className="rounded bg-green-100 px-2 py-0.5 text-sm text-green-700">
-                          답변완료
-                        </span>
-                      ) : (
-                        <span className="rounded bg-gray-200 px-2 py-0.5 text-sm text-gray-700">
-                          대기
-                        </span>
-                      )}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="mt-8 flex justify-center gap-2">
-            <Button variant="outline">
-              <ChevronFirst />
-            </Button>
-            <Button variant="outline">
-              <ChevronLeft />
-            </Button>
-            <Button variant="default">1</Button>
-            <Button variant="outline">2</Button>
-            <Button variant="outline">3</Button>
-            <Button variant="outline">
-              <ChevronRight />
-            </Button>
-            <Button variant="outline">
-              <ChevronLast />
-            </Button>
-          </div>
+          <QnaList />
         </div>
       </section>
 

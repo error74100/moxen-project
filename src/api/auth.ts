@@ -11,7 +11,7 @@ export async function signOut() {
   }
 }
 
-export async function SignUp({
+export async function signUp({
   email,
   password,
 }: {

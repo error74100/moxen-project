@@ -4,50 +4,54 @@ import type { PostEntity } from "@/types";
 export async function fetchQnas({
   from,
   to,
-  userId,
+  // userId,
   authorId,
 }: {
   from: number;
   to: number;
-  userId: string;
+  // userId: string;
   authorId?: string;
 }) {
   const request = supabase
     .from("qna")
-    .select("*, author:profile!author_id (*), myLiked:like!post_id (*)")
-    .eq("like.user_id", userId)
+    // .select("*, author:profile!author_id (*), myLiked:like!post_id (*)")
+    // .eq("like.user_id", userId)
+    .select("*, author:profile!author_id (*)")
     .order("created_at", { ascending: false })
     .range(from, to);
 
-  if (authorId) request.eq("author_id", authorId);
+  // if (authorId) request.eq("author_id", authorId);
 
   const { data, error } = await request;
 
   if (error) throw error;
-  return data.map((post) => ({
-    ...post,
-    isLiked: post.myLiked && post.myLiked.length > 0,
+  // return data.map((qna) => ({
+  //   ...qna,
+  //   isLiked: qna.myLiked && qna.myLiked.length > 0,
+  // }));
+  return data.map((qna) => ({
+    ...qna,
   }));
 }
 
 export async function fetchQnaById({
-  postId,
-  userId,
+  qnaId,
+  // userId,
 }: {
-  postId: number;
-  userId: string;
+  qnaId: number;
+  // userId: string;
 }) {
   const { data, error } = await supabase
     .from("qna")
-    .select("*, author:profile!author_id (*), myLiked:like!post_id (*)")
-    .eq("like.user_id", userId)
-    .eq("id", postId)
+    // .select("*, author:profile!author_id (*), myLiked:like!post_id (*)")
+    // .eq("like.user_id", userId)
+    .select("*, author:profile!author_id (*)")
+    .eq("id", qnaId)
     .single();
 
   if (error) throw error;
   return {
     ...data,
-    isLiked: data.myLiked && data.myLiked.length > 0,
   };
 }
 
@@ -109,11 +113,11 @@ export async function createQna({
 //   }
 // }
 
-export async function updateQna(post: Partial<PostEntity> & { id: number }) {
+export async function updateQna(qna: Partial<PostEntity> & { id: number }) {
   const { data, error } = await supabase
     .from("qna")
-    .update(post)
-    .eq("id", post.id)
+    .update(qna)
+    .eq("id", qna.id)
     .select()
     .single();
 

@@ -1,6 +1,6 @@
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import reactImg from "@/assets/react.svg";
-import { Menu, UserRound, X } from "lucide-react";
+import { LogOut, Menu, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   Sheet,
@@ -16,6 +16,8 @@ import { useIsMobile } from "@/utills/use-is-mobile";
 import { useMoveScrollTop } from "@/utills/use-move-scrollTop";
 import { useSession } from "@/store/session";
 import ProfileButton from "./profile-button";
+import { signOut } from "@/api/auth";
+import { toast } from "sonner";
 
 const headerBgPages = [
   "/sign-in",
@@ -48,6 +50,16 @@ export default function GlobalLayout() {
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleLogOutActionClick = () => {
+    signOut();
+    setMobileMenuOpen(false); // Sheet 닫기
+
+    toast.success("로그아웃 되었습니다.", {
+      position: "top-center",
+    });
+    navigate("/", { replace: true });
+  };
 
   return (
     <div className="flex flex-col">
@@ -138,19 +150,41 @@ export default function GlobalLayout() {
 
                   <SheetFooter>
                     <div className="flex gap-2">
-                      <p
-                        onClick={() => {
-                          setMobileMenuOpen(false); // Sheet 닫기
+                      {session ? (
+                        <div className="flex items-center gap-3">
+                          <p
+                            onClick={() => {
+                              setMobileMenuOpen(false); // Sheet 닫기
 
-                          setTimeout(() => {
-                            navigate("/sign-in"); // 애니메이션 끝난 뒤 이동
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }, 250);
-                        }}
-                        className="inline-flex cursor-pointer rounded-full p-1"
-                      >
-                        <UserRound className="h-5 w-5 hover:text-blue-400" />
-                      </p>
+                              setTimeout(() => {
+                                navigate(`/profile/${session.user.id}`); // 애니메이션 끝난 뒤 이동
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }, 250);
+                            }}
+                            className="inline-flex cursor-pointer rounded-full p-1"
+                          >
+                            <UserRound className="h-5 w-5 hover:text-blue-400" />
+                          </p>
+                          <LogOut
+                            onClick={handleLogOutActionClick}
+                            className="h-5 w-5 cursor-pointer hover:text-blue-400"
+                          />
+                        </div>
+                      ) : (
+                        <p
+                          onClick={() => {
+                            setMobileMenuOpen(false); // Sheet 닫기
+
+                            setTimeout(() => {
+                              navigate("/sign-in"); // 애니메이션 끝난 뒤 이동
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }, 250);
+                          }}
+                          className="inline-flex cursor-pointer rounded-full p-1"
+                        >
+                          <UserRound className="h-5 w-5 hover:text-blue-400" />
+                        </p>
+                      )}
                     </div>
                   </SheetFooter>
                 </SheetContent>
