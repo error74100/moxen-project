@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
-import reactImg from "@/assets/react.svg";
+import Logo from "/logo.png";
 import { LogOut, Menu, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -71,12 +71,11 @@ export default function GlobalLayout() {
       >
         <div className="m-auto flex h-full w-full items-center justify-between px-5">
           <Link to={"/"} className="flex items-center gap-2">
-            <img className="h-5" src={reactImg} alt="logo" />
-            <div className="font-bold">House</div>
+            <img className="h-10" src={Logo} alt="logo" />
           </Link>
 
           {/* pc menu */}
-          <div className="hidden items-center gap-10 md:flex">
+          <div className="hidden items-center gap-6 md:flex lg:gap-12">
             {gnbMenus.map((menu) => (
               <NavLink
                 key={menu.path}

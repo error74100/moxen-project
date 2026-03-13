@@ -67,6 +67,9 @@ export default function SignUpPage() {
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSignUpClick();
+              }}
               type="email"
               placeholder="example@email.com"
               className="py-6"
@@ -80,6 +83,9 @@ export default function SignUpPage() {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSignUpClick();
               }}
               type="password"
               placeholder="password"

@@ -87,6 +87,9 @@ export default function SignInPage() {
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSignInWithPasswordClick();
+              }}
               type="email"
               placeholder="example@email.com"
               className="py-6"
@@ -100,6 +103,9 @@ export default function SignInPage() {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSignInWithPasswordClick();
               }}
               type="password"
               placeholder="password"
