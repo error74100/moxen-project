@@ -18,6 +18,7 @@ import { SquarePen, TextAlignStart, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
+import AvatarDefaultImg from "@/assets/images/avatar_default.png";
 
 export default function QnaDetailPage() {
   const params = useParams();
@@ -94,8 +95,18 @@ export default function QnaDetailPage() {
             <div className="border-b p-4 md:p-5">
               <h2 className="text-lg font-semibold md:text-xl">{qna?.title}</h2>
             </div>
-            <div className="flex flex-wrap gap-x-2 gap-y-1 border-b p-4 text-sm text-gray-500 md:gap-x-6 md:p-5 md:text-base">
-              <span>작성자: {qna?.author.nickname}</span>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 border-b p-4 text-sm text-gray-500 md:gap-x-6 md:p-5 md:text-base">
+              <p className="flex items-center gap-1">
+                <span>작성자:</span>
+                <span>
+                  <img
+                    src={qna.author.avatar_url || AvatarDefaultImg}
+                    className="h-8 w-8 rounded-full border object-cover"
+                    alt="avatar"
+                  />
+                </span>
+                <span>{qna?.author.nickname}</span>
+              </p>
               <span>작성일: {formatTime(qna.created_at)}</span>
               <span className="rounded bg-green-100 px-2 py-0.5 text-xs leading-4.5 text-green-700 md:leading-5.5">
                 {qna?.reply_status}

@@ -50,9 +50,9 @@ export default function QnaItem({
         </span>
 
         <span className="ml-auto md:mx-auto md:py-3 md:text-center">
-          {qna.reply_status === "대기" ? (
+          {qna.reply_status === "답변대기" ? (
             <span className="rounded bg-gray-200 px-2 py-0.5 text-sm text-gray-700">
-              대기
+              답변대기
             </span>
           ) : (
             <span className="rounded bg-green-100 px-2 py-0.5 text-sm text-green-700">

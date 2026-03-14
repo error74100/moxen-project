@@ -24,3 +24,5 @@ export const QUERY_KEYS = {
     post: (postId: number) => ["comment", "qna", postId],
   },
 };
+
+export const BUCKET_NAME = "uploads";
