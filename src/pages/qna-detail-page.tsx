@@ -108,9 +108,15 @@ export default function QnaDetailPage() {
                 <span>{qna?.author.nickname}</span>
               </p>
               <span>작성일: {formatTime(qna.created_at)}</span>
-              <span className="rounded bg-green-100 px-2 py-0.5 text-xs leading-4.5 text-green-700 md:leading-5.5">
-                {qna?.reply_status}
-              </span>
+              {qna.reply_status === "답변대기" ? (
+                <span className="rounded bg-gray-200 px-2 py-0.5 text-sm text-gray-700">
+                  답변대기
+                </span>
+              ) : (
+                <span className="rounded bg-green-100 px-2 py-0.5 text-sm text-green-700">
+                  답변완료
+                </span>
+              )}
             </div>
 
             <div className="min-h-45 p-4 leading-relaxed whitespace-pre-line md:p-6">
