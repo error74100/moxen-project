@@ -21,7 +21,7 @@ export const QUERY_KEYS = {
   },
   comment: {
     all: ["comment"],
-    post: (postId: number) => ["comment", "qna", postId],
+    qna: (qnaId: number) => ["comment", "qna", qnaId],
   },
 };
 

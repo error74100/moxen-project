@@ -21,7 +21,7 @@ export type Database = {
           created_at: string
           id: number
           parent_comment_id: number | null
-          post_id: number
+          qna_id: number
           root_coment_id: number | null
         }
         Insert: {
@@ -30,7 +30,7 @@ export type Database = {
           created_at?: string
           id?: number
           parent_comment_id?: number | null
-          post_id: number
+          qna_id: number
           root_coment_id?: number | null
         }
         Update: {
@@ -39,7 +39,7 @@ export type Database = {
           created_at?: string
           id?: number
           parent_comment_id?: number | null
-          post_id?: number
+          qna_id?: number
           root_coment_id?: number | null
         }
         Relationships: [
@@ -59,7 +59,7 @@ export type Database = {
           },
           {
             foreignKeyName: "comment_post_id_fkey"
-            columns: ["post_id"]
+            columns: ["qna_id"]
             isOneToOne: false
             referencedRelation: "qna"
             referencedColumns: ["id"]
@@ -110,6 +110,7 @@ export type Database = {
           email: string
           id: string
           nickname: string
+          role: string
         }
         Insert: {
           avatar_url?: string | null
@@ -118,6 +119,7 @@ export type Database = {
           email?: string
           id?: string
           nickname?: string
+          role?: string
         }
         Update: {
           avatar_url?: string | null
@@ -126,6 +128,7 @@ export type Database = {
           email?: string
           id?: string
           nickname?: string
+          role?: string
         }
         Relationships: []
       }

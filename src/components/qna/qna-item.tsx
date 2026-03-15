@@ -27,17 +27,17 @@ export default function QnaItem({
   if (isPending) return "loading..";
 
   return (
-    <li className="border-t p-3 hover:bg-gray-50 md:grid md:grid-cols-[120px_1fr_220px_220px_120px] md:items-center md:p-0">
+    <li
+      onClick={() => navigate(`/qna/${qnaId}`)}
+      className="cursor-pointer border-t p-3 hover:bg-gray-50 md:grid md:grid-cols-[120px_1fr_220px_220px_120px] md:items-center md:p-0"
+    >
       {/* 모바일 1줄 : 번호 + 제목 */}
       <div className="flex items-center gap-2 md:contents">
         <span className="text-sm text-gray-500 md:block md:py-3 md:text-center">
           {qna?.id}
         </span>
 
-        <span
-          className="flex-1 cursor-pointer truncate text-left font-medium hover:underline md:py-3"
-          onClick={() => navigate(`/qna/${qnaId}`)}
-        >
+        <span className="flex-1 truncate text-left font-medium md:py-3">
           {qna?.title}
         </span>
       </div>

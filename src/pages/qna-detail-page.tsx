@@ -19,6 +19,9 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import AvatarDefaultImg from "@/assets/images/avatar_default.png";
+import CommentEditor from "@/components/comment/comment-editor";
+import { useProfileData } from "@/hooks/queries/use-profile-data";
+import Loader from "@/components/loader";
 
 export default function QnaDetailPage() {
   const params = useParams();
@@ -27,6 +30,13 @@ export default function QnaDetailPage() {
   const type = "DETAIL";
   const [isOpen, setIsOpen] = useState(false);
   const session = useSession();
+
+  const {
+    data: profile,
+    error: fetchProfileError,
+    isLoading: isFetchingProfileLoading,
+    fetchStatus: isFetchingProfileStatus,
+  } = useProfileData({ userId: session?.user.id });
 
   const {
     data: qna,
@@ -58,9 +68,13 @@ export default function QnaDetailPage() {
 
   const userId = qna?.author_id;
   const isMine = userId === session?.user.id;
+  const isAdmin = profile?.role === "admin";
 
   if (error) return "qna error..";
-  if (isPending) return "loading..";
+
+  // userId가 없어서 쿼리가 아예 실행 안 된 상태(idle)라면 로더를 보여주면 안됨.
+  if (isFetchingProfileLoading && isFetchingProfileStatus !== "idle")
+    return <Loader />;
 
   const handleDeleteQnaAction = () => {
     deleteQna(qnaId);
@@ -87,113 +101,114 @@ export default function QnaDetailPage() {
         </div>
       </section>
 
-      <section className="container mx-auto space-y-20 px-6 pt-20 pb-30">
-        <div className="space-y-10 text-center">
-          <h2 className="text-2xl font-semibold md:text-3xl">입실문의</h2>
+      {!isPending && (
+        <div>
+          <section className="container mx-auto space-y-20 px-6 pt-20 pb-30">
+            <div className="space-y-10 text-center">
+              <h2 className="text-2xl font-semibold md:text-3xl">입실문의</h2>
 
-          <div className="overflow-hidden border-t border-black text-left">
-            <div className="border-b p-4 md:p-5">
-              <h2 className="text-lg font-semibold md:text-xl">{qna?.title}</h2>
-            </div>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 border-b p-4 text-sm text-gray-500 md:gap-x-6 md:p-5 md:text-base">
-              <p className="flex items-center gap-1">
-                <span>작성자:</span>
-                <span>
-                  <img
-                    src={qna.author.avatar_url || AvatarDefaultImg}
-                    className="h-8 w-8 rounded-full border object-cover"
-                    alt="avatar"
-                  />
-                </span>
-                <span>{qna?.author.nickname}</span>
-              </p>
-              <span>작성일: {formatTime(qna.created_at)}</span>
-              {qna.reply_status === "답변대기" ? (
-                <span className="rounded bg-gray-200 px-2 py-0.5 text-sm text-gray-700">
-                  답변대기
-                </span>
-              ) : (
-                <span className="rounded bg-green-100 px-2 py-0.5 text-sm text-green-700">
-                  답변완료
-                </span>
-              )}
-            </div>
+              <div className="overflow-hidden border-t border-black text-left">
+                <div className="border-b p-4 md:p-5">
+                  <h2 className="text-lg font-semibold md:text-xl">
+                    {qna?.title}
+                  </h2>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 border-b p-4 text-sm text-gray-500 md:gap-x-6 md:p-5 md:text-base">
+                  <p className="flex items-center gap-1">
+                    <span>작성자:</span>
+                    <span>
+                      <img
+                        src={qna?.author.avatar_url || AvatarDefaultImg}
+                        className="h-8 w-8 rounded-full border object-cover"
+                        alt="avatar"
+                      />
+                    </span>
+                    <span>{qna?.author.nickname}</span>
+                  </p>
+                  <span>작성일: {formatTime(qna.created_at)}</span>
+                  {qna.reply_status === "답변대기" ? (
+                    <span className="rounded bg-gray-200 px-2 py-0.5 text-sm text-gray-700">
+                      답변대기
+                    </span>
+                  ) : (
+                    <span className="rounded bg-green-100 px-2 py-0.5 text-sm text-green-700">
+                      답변완료
+                    </span>
+                  )}
+                </div>
 
-            <div className="min-h-45 p-4 leading-relaxed whitespace-pre-line md:p-6">
-              {qna?.content}
-            </div>
+                <div className="min-h-45 p-4 leading-relaxed whitespace-pre-line md:p-6">
+                  {qna?.content}
+                </div>
 
-            {/* 관리자 답변 */}
-            <div className="border-t bg-gray-50 p-4 md:p-6">
-              <div className="mb-3 font-semibold">관리자 답변</div>
-              <div className="text-sm leading-relaxed whitespace-pre-line md:text-base">
-                담당자 확인중입니다. 빠른 시일내에 답변드리겠습니다.
+                {/* 관리자 답변 */}
+                <CommentEditor qnaId={qnaId} isAdmin={isAdmin} />
+              </div>
+
+              <div className="mt-8 flex justify-center gap-2">
+                <Button
+                  disabled={isDeleteQnaPending}
+                  variant="outline"
+                  size="lg"
+                  onClick={() => navigate("/qna")}
+                  className="cursor-pointer"
+                >
+                  <TextAlignStart />
+                  목록보기
+                </Button>
+                {isMine && (
+                  <>
+                    <Button
+                      disabled={isDeleteQnaPending}
+                      variant="default"
+                      size="lg"
+                      onClick={() =>
+                        navigate(`/qna-update/${qnaId}`, { replace: true })
+                      }
+                      className="cursor-pointer"
+                    >
+                      <SquarePen />
+                      글수정
+                    </Button>
+                    <Button
+                      disabled={isDeleteQnaPending}
+                      variant="destructive"
+                      size="lg"
+                      onClick={() => setIsOpen(true)}
+                      className="cursor-pointer"
+                    >
+                      <Trash2 />
+                      글삭제
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
-          </div>
+          </section>
 
-          <div className="mt-8 flex justify-center gap-2">
-            <Button
-              disabled={isDeleteQnaPending}
-              variant="outline"
-              size="lg"
-              onClick={() => navigate("/qna")}
-              className="cursor-pointer"
-            >
-              <TextAlignStart />
-              목록보기
-            </Button>
-            {isMine && (
-              <>
-                <Button
-                  disabled={isDeleteQnaPending}
-                  variant="default"
-                  size="lg"
-                  onClick={() =>
-                    navigate(`/qna-update/${qnaId}`, { replace: true })
-                  }
+          <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>글삭제</AlertDialogTitle>
+                <AlertDialogDescription>
+                  해당글을 삭제 하시겠습니까?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="cursor-pointer">
+                  취소
+                </AlertDialogCancel>
+                <AlertDialogAction
                   className="cursor-pointer"
+                  onClick={handleDeleteQnaAction}
                 >
-                  <SquarePen />
-                  글수정
-                </Button>
-                <Button
-                  disabled={isDeleteQnaPending}
-                  variant="destructive"
-                  size="lg"
-                  onClick={() => setIsOpen(true)}
-                  className="cursor-pointer"
-                >
-                  <Trash2 />
-                  글삭제
-                </Button>
-              </>
-            )}
-          </div>
+                  삭제
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
-      </section>
-
-      <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>글삭제</AlertDialogTitle>
-            <AlertDialogDescription>
-              해당글을 삭제 하시겠습니까?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">
-              취소
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="cursor-pointer"
-              onClick={handleDeleteQnaAction}
-            >
-              삭제
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      )}
     </div>
   );
 }

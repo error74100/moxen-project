@@ -72,7 +72,7 @@ export default function QnaDetailPage() {
 
           <div className="overflow-hidden border-t border-black text-left">
             <div className="border-b p-4 md:p-5">
-              <h2 className="text-lg font-semibold md:text-xl">
+              <h2>
                 <Input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -82,7 +82,7 @@ export default function QnaDetailPage() {
               </h2>
             </div>
 
-            <div className="min-h-45 p-4 leading-relaxed whitespace-pre-line md:p-6">
+            <div className="min-h-45 p-4 leading-relaxed whitespace-pre-line md:p-5">
               <Textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
