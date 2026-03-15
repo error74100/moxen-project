@@ -70,7 +70,10 @@ export default function QnaDetailPage() {
   const isMine = userId === session?.user.id;
   const isAdmin = profile?.role === "admin";
 
-  if (!isMine) return navigate("/qna/");
+  if (!isMine && !isAdmin) {
+    navigate("/qna/");
+    return;
+  }
 
   if (error) return "qna error..";
 

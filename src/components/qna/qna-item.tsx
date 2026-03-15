@@ -1,3 +1,4 @@
+import { useProfileData } from "@/hooks/queries/use-profile-data";
 import { useQnaByIdData } from "@/hooks/queries/use-qna-by-id-data";
 import { formatTime } from "@/lib/time";
 import { useSession } from "@/store/session";
@@ -24,8 +25,17 @@ export default function QnaItem({
     type: type,
   });
 
+  const {
+    data: profile,
+    error: fetchProfileError,
+    isLoading: isFetchingProfileLoading,
+    fetchStatus: isFetchingProfileStatus,
+  } = useProfileData({ userId: session?.user.id });
+
+  const isAdmin = profile?.role === "admin";
+
   const handleDetailLinkClick = () => {
-    if (!isMine) {
+    if (!isMine && !isAdmin) {
       toast(
         <>
           본인글만 볼 수 있습니다.
