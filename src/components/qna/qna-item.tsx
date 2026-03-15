@@ -2,6 +2,7 @@ import { useQnaByIdData } from "@/hooks/queries/use-qna-by-id-data";
 import { formatTime } from "@/lib/time";
 import { useSession } from "@/store/session";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export default function QnaItem({
   qnaId,
@@ -23,12 +24,31 @@ export default function QnaItem({
     type: type,
   });
 
+  const handleDetailLinkClick = () => {
+    if (!isMine) {
+      toast(
+        <>
+          본인글만 볼 수 있습니다.
+          <br />
+          로그인 후 확인해 주세요.
+        </>,
+        {
+          position: "top-center",
+        },
+      );
+      return;
+    }
+    navigate(`/qna/${qnaId}`);
+  };
+
   if (error) return "qna error..";
   if (isPending) return "loading..";
 
+  const isMine = session?.user.id === qna?.author_id;
+
   return (
     <li
-      onClick={() => navigate(`/qna/${qnaId}`)}
+      onClick={handleDetailLinkClick}
       className="cursor-pointer border-t p-3 hover:bg-gray-50 md:grid md:grid-cols-[120px_1fr_220px_220px_120px] md:items-center md:p-0"
     >
       {/* 모바일 1줄 : 번호 + 제목 */}

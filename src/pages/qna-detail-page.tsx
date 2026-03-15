@@ -70,6 +70,8 @@ export default function QnaDetailPage() {
   const isMine = userId === session?.user.id;
   const isAdmin = profile?.role === "admin";
 
+  if (!isMine) return navigate("/qna/");
+
   if (error) return "qna error..";
 
   // userId가 없어서 쿼리가 아예 실행 안 된 상태(idle)라면 로더를 보여주면 안됨.
