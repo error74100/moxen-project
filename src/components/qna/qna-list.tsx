@@ -3,12 +3,14 @@ import {
   ChevronLast,
   ChevronLeft,
   ChevronRight,
+  Search,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { useQnasData } from "@/hooks/queries/use-qnas-data";
 import QnaItem from "./qna-item";
 import { useState } from "react";
 import { QNA_PAGE_GROUP_SIZE, QNA_PAGE_SIZE } from "@/lib/constants";
+import { Input } from "../ui/input";
 
 export default function QnaList() {
   const [page, setPage] = useState(1);
@@ -94,6 +96,13 @@ export default function QnaList() {
         >
           <ChevronLast />
         </Button>
+      </div>
+
+      <div className="mt-1 flex justify-center gap-2">
+        <div className="relative min-w-full sm:min-w-84">
+          <Input className="py-5 pr-10" placeholder="검색어를 입력하세요." />
+          <Search className="absolute top-2 right-2 cursor-pointer" />
+        </div>
       </div>
     </>
   );
