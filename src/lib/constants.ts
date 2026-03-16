@@ -15,7 +15,8 @@ export const QUERY_KEYS = {
   },
   qna: {
     all: ["qna"],
-    list: ["qna", "list"],
+    // list: ["qna", "list"],
+    list: (page: number) => ["qna", "list", page],
     userList: (userId: string) => ["qna", "userList", userId],
     byId: (postId: number) => ["qna", "byId", postId],
   },
@@ -26,3 +27,5 @@ export const QUERY_KEYS = {
 };
 
 export const BUCKET_NAME = "uploads";
+export const QNA_PAGE_GROUP_SIZE = 3;
+export const QNA_PAGE_SIZE = 5;

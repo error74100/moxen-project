@@ -16,22 +16,28 @@ export async function fetchQnas({
     .from("qna")
     // .select("*, author:profile!author_id (*), myLiked:like!post_id (*)")
     // .eq("like.user_id", userId)
-    .select("*, author:profile!author_id (*)")
+    .select("*, author:profile!author_id (*)", { count: "exact" })
     .order("created_at", { ascending: false })
     .range(from, to);
 
-  // if (authorId) request.eq("author_id", authorId);
+  if (authorId) request.eq("author_id", authorId);
 
-  const { data, error } = await request;
+  const { data, error, count } = await request;
 
   if (error) throw error;
   // return data.map((qna) => ({
   //   ...qna,
   //   isLiked: qna.myLiked && qna.myLiked.length > 0,
   // }));
-  return data.map((qna) => ({
-    ...qna,
-  }));
+
+  // return data.map((qna) => ({
+  //   ...qna,
+  // }));
+
+  return {
+    qnas: data ?? [],
+    count: count ?? 0,
+  };
 }
 
 export async function fetchQnaById({

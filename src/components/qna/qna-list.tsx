@@ -7,13 +7,26 @@ import {
 import { Button } from "../ui/button";
 import { useQnasData } from "@/hooks/queries/use-qnas-data";
 import QnaItem from "./qna-item";
+import { useState } from "react";
+import { QNA_PAGE_GROUP_SIZE, QNA_PAGE_SIZE } from "@/lib/constants";
 
 export default function QnaList() {
+  const [page, setPage] = useState(1);
   const {
     data: qnaData,
     error: qnaError,
     isPending: qnaIsPending,
-  } = useQnasData();
+  } = useQnasData(page);
+
+  const totalPage = Math.ceil((qnaData?.totalCount ?? 0) / QNA_PAGE_SIZE);
+  const startPage =
+    Math.floor((page - 1) / QNA_PAGE_GROUP_SIZE) * QNA_PAGE_GROUP_SIZE + 1;
+  const endPage = Math.min(startPage + QNA_PAGE_GROUP_SIZE - 1, totalPage);
+
+  const pages = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i,
+  );
 
   if (qnaError) return "qna error..";
   if (qnaIsPending) return "loading..";
@@ -30,32 +43,55 @@ export default function QnaList() {
         </ul>
 
         <ul>
-          {qnaData.map((qnaId) => (
+          {qnaData.ids.map((qnaId) => (
             <QnaItem key={qnaId} qnaId={qnaId} type={"LIST"} />
           ))}
         </ul>
       </div>
 
       <div className="mt-8 flex justify-center gap-2">
-        <Button variant="outline" className="cursor-pointer">
+        <Button
+          onClick={() => setPage(1)}
+          disabled={page === 1}
+          variant="outline"
+          className="cursor-pointer"
+        >
           <ChevronFirst />
         </Button>
-        <Button variant="outline" className="cursor-pointer">
+        <Button
+          onClick={() => setPage(page - 1)}
+          disabled={page === 1}
+          variant="outline"
+          className="cursor-pointer"
+        >
           <ChevronLeft />
         </Button>
-        <Button variant="default" className="cursor-pointer">
-          1
-        </Button>
-        <Button variant="outline" className="cursor-pointer">
-          2
-        </Button>
-        <Button variant="outline" className="cursor-pointer">
-          3
-        </Button>
-        <Button variant="outline" className="cursor-pointer">
+
+        {pages.map((p) => (
+          <Button
+            key={p}
+            onClick={() => setPage(p)}
+            className="cursor-pointer"
+            variant={page === p ? "default" : "outline"}
+          >
+            {p}
+          </Button>
+        ))}
+
+        <Button
+          onClick={() => setPage(page + 1)}
+          disabled={page === totalPage}
+          variant="outline"
+          className="cursor-pointer"
+        >
           <ChevronRight />
         </Button>
-        <Button variant="outline" className="cursor-pointer">
+        <Button
+          onClick={() => setPage(totalPage)}
+          disabled={page === totalPage}
+          variant="outline"
+          className="cursor-pointer"
+        >
           <ChevronLast />
         </Button>
       </div>
