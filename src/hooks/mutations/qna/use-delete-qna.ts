@@ -16,7 +16,7 @@ export function useDeleteQna(callbacks?: UseMutationCallback) {
       //   }
 
       queryClient.resetQueries({
-        queryKey: QUERY_KEYS.qna.list,
+        queryKey: QUERY_KEYS.qna.list(1),
       });
     },
     onError: (error) => {
