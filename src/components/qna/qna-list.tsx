@@ -11,27 +11,40 @@ import QnaItem from "./qna-item";
 import { useState } from "react";
 import { QNA_PAGE_GROUP_SIZE, QNA_PAGE_SIZE } from "@/lib/constants";
 import { Input } from "../ui/input";
+import Loader from "../loader";
 
 export default function QnaList() {
   const [page, setPage] = useState(1);
-  const {
-    data: qnaData,
-    error: qnaError,
-    isPending: qnaIsPending,
-  } = useQnasData(page);
+  const [input, setInput] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState("");
 
-  const totalPage = Math.ceil((qnaData?.totalCount ?? 0) / QNA_PAGE_SIZE);
+  const {
+    data: qnaListData,
+    error: qnaListError,
+    isPending: qnaListIsPending,
+    refetch: qnaListRefetch,
+  } = useQnasData(page, searchKeyword);
+
+  const totalPage = Math.ceil((qnaListData?.totalCount ?? 0) / QNA_PAGE_SIZE);
   const startPage =
     Math.floor((page - 1) / QNA_PAGE_GROUP_SIZE) * QNA_PAGE_GROUP_SIZE + 1;
   const endPage = Math.min(startPage + QNA_PAGE_GROUP_SIZE - 1, totalPage);
 
-  const pages = Array.from(
-    { length: endPage - startPage + 1 },
-    (_, i) => startPage + i,
-  );
+  const pages = Array.from({ length: totalPage }, (_, i) => i + 1);
 
-  if (qnaError) return "qna error..";
-  if (qnaIsPending) return "loading..";
+  const handleSearchClick = () => {
+    const trimmed = input.trim();
+
+    // 1. 실제 검색어 상태를 업데이트 (이때 queryKey가 변하며 API 호출)
+    setSearchKeyword(trimmed);
+    setPage(1);
+
+    // 2. 인풋창도 깔끔하게 정리하고 싶다면
+    setInput(trimmed);
+  };
+
+  if (qnaListError) return "qna error..";
+  if (qnaListIsPending) return <Loader />;
 
   return (
     <>
@@ -45,16 +58,22 @@ export default function QnaList() {
         </ul>
 
         <ul>
-          {qnaData.ids.map((qnaId) => (
+          {qnaListData?.ids.map((qnaId) => (
             <QnaItem key={qnaId} qnaId={qnaId} type={"LIST"} />
           ))}
         </ul>
+
+        {qnaListData?.ids.length === 0 && (
+          <div className="py-20 text-center text-gray-500">
+            검색 결과가 없습니다.
+          </div>
+        )}
       </div>
 
       <div className="mt-8 flex justify-center gap-2">
         <Button
           onClick={() => setPage(1)}
-          disabled={page === 1}
+          disabled={page === 1 || totalPage === 0}
           variant="outline"
           className="cursor-pointer"
         >
@@ -82,7 +101,7 @@ export default function QnaList() {
 
         <Button
           onClick={() => setPage(page + 1)}
-          disabled={page === totalPage}
+          disabled={page === totalPage || totalPage === 0}
           variant="outline"
           className="cursor-pointer"
         >
@@ -90,7 +109,7 @@ export default function QnaList() {
         </Button>
         <Button
           onClick={() => setPage(totalPage)}
-          disabled={page === totalPage}
+          disabled={page === totalPage || totalPage === 0}
           variant="outline"
           className="cursor-pointer"
         >
@@ -100,8 +119,21 @@ export default function QnaList() {
 
       <div className="mt-1 flex justify-center gap-2">
         <div className="relative min-w-full sm:min-w-84">
-          <Input className="py-5 pr-10" placeholder="검색어를 입력하세요." />
-          <Search className="absolute top-2 right-2 cursor-pointer" />
+          <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearchClick();
+              }
+            }}
+            className="py-5 pr-10"
+            placeholder="검색어를 입력하세요."
+          />
+          <Search
+            onClick={handleSearchClick}
+            className="absolute top-2 right-2 cursor-pointer"
+          />
         </div>
       </div>
     </>

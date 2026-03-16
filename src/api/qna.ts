@@ -5,11 +5,13 @@ export async function fetchQnas({
   from,
   to,
   // userId,
+  keyword,
   authorId,
 }: {
   from: number;
   to: number;
   // userId: string;
+  keyword?: string;
   authorId?: string;
 }) {
   const request = supabase
@@ -17,6 +19,11 @@ export async function fetchQnas({
     // .select("*, author:profile!author_id (*), myLiked:like!post_id (*)")
     // .eq("like.user_id", userId)
     .select("*, author:profile!author_id (*)", { count: "exact" })
+    // .or(
+    //   `title.ilike.%${keyword}%,content.ilike.%${keyword}%,profile.nickname.ilike.%${keyword}%`,
+    //   { foreignTable: "profile" },
+    // )
+    .or(`title.ilike.%${keyword}%,content.ilike.%${keyword}%`)
     .order("created_at", { ascending: false })
     .range(from, to);
 

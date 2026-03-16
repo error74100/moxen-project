@@ -16,7 +16,11 @@ export const QUERY_KEYS = {
   qna: {
     all: ["qna"],
     // list: ["qna", "list"],
-    list: (page: number) => ["qna", "list", page],
+    list: (page: number, keyword?: string) => [
+      "qna",
+      "list",
+      { page, keyword },
+    ],
     userList: (userId: string) => ["qna", "userList", userId],
     byId: (postId: number) => ["qna", "byId", postId],
   },
