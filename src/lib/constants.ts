@@ -31,5 +31,4 @@ export const QUERY_KEYS = {
 };
 
 export const BUCKET_NAME = "uploads";
-export const QNA_PAGE_GROUP_SIZE = 3;
 export const QNA_PAGE_SIZE = 5;

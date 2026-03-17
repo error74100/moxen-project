@@ -15,7 +15,7 @@ import { useQnaByIdData } from "@/hooks/queries/use-qna-by-id-data";
 import { formatTime } from "@/lib/time";
 import { useSession } from "@/store/session";
 import { SquarePen, TextAlignStart, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import AvatarDefaultImg from "@/assets/images/avatar_default.png";
@@ -70,10 +70,16 @@ export default function QnaDetailPage() {
   const isMine = userId === session?.user.id;
   const isAdmin = profile?.role === "admin";
 
-  if (!isMine && !isAdmin) {
-    navigate("/qna/");
-    return;
-  }
+  // if (!isMine && !isAdmin) {
+  //   navigate("/qna/");
+  //   return;
+  // }
+
+  useEffect(() => {
+    if (qna && !isMine && !isAdmin) {
+      navigate("/qna/");
+    }
+  }, [qna, isMine, isAdmin, navigate]);
 
   if (error) return "qna error..";
 
@@ -161,7 +167,7 @@ export default function QnaDetailPage() {
                   <TextAlignStart />
                   목록보기
                 </Button>
-                {isMine && (
+                {(isMine || isAdmin) && (
                   <>
                     <Button
                       disabled={isDeleteQnaPending}

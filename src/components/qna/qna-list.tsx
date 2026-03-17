@@ -9,7 +9,7 @@ import { Button } from "../ui/button";
 import { useQnasData } from "@/hooks/queries/use-qnas-data";
 import QnaItem from "./qna-item";
 import { useState } from "react";
-import { QNA_PAGE_GROUP_SIZE, QNA_PAGE_SIZE } from "@/lib/constants";
+import { QNA_PAGE_SIZE } from "@/lib/constants";
 import { Input } from "../ui/input";
 import Loader from "../loader";
 
@@ -26,11 +26,27 @@ export default function QnaList() {
   } = useQnasData(page, searchKeyword);
 
   const totalPage = Math.ceil((qnaListData?.totalCount ?? 0) / QNA_PAGE_SIZE);
-  const startPage =
-    Math.floor((page - 1) / QNA_PAGE_GROUP_SIZE) * QNA_PAGE_GROUP_SIZE + 1;
-  const endPage = Math.min(startPage + QNA_PAGE_GROUP_SIZE - 1, totalPage);
 
-  const pages = Array.from({ length: totalPage }, (_, i) => i + 1);
+  // 현재 페이지 기준으로 앞뒤 1개씩
+  let startPage = page - 1;
+  let endPage = page + 1;
+
+  // 시작 보정
+  if (startPage < 1) {
+    startPage = 1;
+    endPage = Math.min(3, totalPage);
+  }
+
+  // 끝 보정
+  if (endPage > totalPage) {
+    endPage = totalPage;
+    startPage = Math.max(1, totalPage - 2);
+  }
+
+  const pages = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i,
+  );
 
   const handleSearchClick = () => {
     const trimmed = input.trim();
@@ -70,12 +86,13 @@ export default function QnaList() {
         )}
       </div>
 
-      <div className="mt-8 flex justify-center gap-2">
+      <div className="mt-8 flex justify-center gap-1.5">
         <Button
           onClick={() => setPage(1)}
           disabled={page === 1 || totalPage === 0}
           variant="outline"
-          className="cursor-pointer"
+          className="w-8 cursor-pointer"
+          size="sm"
         >
           <ChevronFirst />
         </Button>
@@ -83,7 +100,8 @@ export default function QnaList() {
           onClick={() => setPage(page - 1)}
           disabled={page === 1}
           variant="outline"
-          className="cursor-pointer"
+          className="w-8 cursor-pointer"
+          size="sm"
         >
           <ChevronLeft />
         </Button>
@@ -92,8 +110,9 @@ export default function QnaList() {
           <Button
             key={p}
             onClick={() => setPage(p)}
-            className="cursor-pointer"
+            className="w-8 cursor-pointer"
             variant={page === p ? "default" : "outline"}
+            size="sm"
           >
             {p}
           </Button>
@@ -103,7 +122,8 @@ export default function QnaList() {
           onClick={() => setPage(page + 1)}
           disabled={page === totalPage || totalPage === 0}
           variant="outline"
-          className="cursor-pointer"
+          className="w-8 cursor-pointer"
+          size="sm"
         >
           <ChevronRight />
         </Button>
@@ -111,7 +131,8 @@ export default function QnaList() {
           onClick={() => setPage(totalPage)}
           disabled={page === totalPage || totalPage === 0}
           variant="outline"
-          className="cursor-pointer"
+          className="w-8 cursor-pointer"
+          size="sm"
         >
           <ChevronLast />
         </Button>
@@ -128,7 +149,7 @@ export default function QnaList() {
               }
             }}
             className="py-5 pr-10"
-            placeholder="검색어를 입력하세요."
+            placeholder="제목, 내용 검색"
           />
           <Search
             onClick={handleSearchClick}

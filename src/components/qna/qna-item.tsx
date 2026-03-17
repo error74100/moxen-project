@@ -81,11 +81,11 @@ export default function QnaItem({
 
         <span className="ml-auto md:mx-auto md:py-3 md:text-center">
           {qna.reply_status === "답변대기" ? (
-            <span className="rounded bg-gray-200 px-2 py-0.5 text-sm text-gray-700">
+            <span className="rounded bg-gray-200 px-2 py-0.5 text-sm whitespace-nowrap text-gray-700">
               답변대기
             </span>
           ) : (
-            <span className="rounded bg-green-100 px-2 py-0.5 text-sm text-green-700">
+            <span className="rounded bg-green-100 px-2 py-0.5 text-sm whitespace-nowrap text-green-700">
               답변완료
             </span>
           )}
