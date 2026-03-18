@@ -1,13 +1,23 @@
 import QnaBg from "@/assets/images/qna_bg.jpg";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateQna } from "@/hooks/mutations/qna/use-create-qna";
 import { useSession } from "@/store/session";
-import { Pen, X } from "lucide-react";
-import { useState } from "react";
+import { Paperclip, Pen, X, XIcon } from "lucide-react";
+import { useRef, useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
+
+type Image = {
+  file: File;
+  previewUrl: string;
+};
 
 export default function QnaDetailPage() {
   const navigate = useNavigate();
@@ -15,6 +25,8 @@ export default function QnaDetailPage() {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [images, setImages] = useState<Image[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { mutate: createQna, isPending: isCreateQnaPending } = useCreateQna({
     onSuccess: () => {
@@ -29,6 +41,29 @@ export default function QnaDetailPage() {
       });
     },
   });
+
+  const handleSelectImages = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+
+      files.forEach((file) => {
+        setImages((prev) => [
+          ...prev,
+          { file, previewUrl: URL.createObjectURL(file) },
+        ]);
+      });
+    }
+
+    e.target.value = "";
+  };
+
+  const handleDeleteImage = (image: Image) => {
+    setImages((prevImages) =>
+      prevImages.filter((item) => item.previewUrl !== image.previewUrl),
+    );
+
+    URL.revokeObjectURL(image.previewUrl);
+  };
 
   const handleSaveQnaClick = () => {
     if (title.trim() === "" || content.trim() === "") {
@@ -89,6 +124,53 @@ export default function QnaDetailPage() {
                 className="h-[30vh] resize-none py-4 md:h-[40vh]"
                 placeholder="문의내용"
               />
+            </div>
+
+            <div className="border-t border-b p-4 md:p-5">
+              {images.length > 0 && (
+                <Carousel className="mb-5">
+                  <CarouselContent>
+                    {images.map((image) => (
+                      <CarouselItem
+                        className="basis-2/5"
+                        key={image.previewUrl}
+                      >
+                        <div className="relative aspect-square w-full">
+                          <img
+                            src={image.previewUrl}
+                            className="h-full w-full rounded-sm object-cover"
+                          />
+                          <div
+                            onClick={() => handleDeleteImage(image)}
+                            className="absolute top-0 right-0 m-1 cursor-pointer rounded-full bg-black/30 p-1"
+                          >
+                            <XIcon className="h-4 w-4 text-white" />
+                          </div>
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                </Carousel>
+              )}
+              <input
+                onChange={handleSelectImages}
+                ref={fileInputRef}
+                type="file"
+                accept="*"
+                multiple
+                // className="hidden"
+              />
+              <Button
+                onClick={() => {
+                  fileInputRef.current?.click();
+                }}
+                // disabled={isPending}
+                variant={"outline"}
+                className="cursor-pointer"
+              >
+                <Paperclip />
+                첨부파일 추가
+              </Button>
             </div>
           </div>
 
