@@ -1,7 +1,7 @@
 import { BUCKET_NAME } from "@/lib/constants";
 import supabase from "@/lib/supabase";
 
-export async function uploadImage({
+export async function uploadFile({
   file,
   filePath,
 }: {
@@ -21,7 +21,7 @@ export async function uploadImage({
   return publicUrl;
 }
 
-export async function deleteImagesInPath(path: string) {
+export async function deleteFilesInPath(path: string) {
   const { data: files, error: fetchFilesError } = await supabase.storage
     .from(BUCKET_NAME)
     .list(path);

@@ -1,4 +1,4 @@
-import { updateQna } from "@/api/qna";
+import { updateQnaWithUploads } from "@/api/qna";
 import { QUERY_KEYS } from "@/lib/constants";
 import type { Qna, UseMutationCallback } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -7,7 +7,7 @@ export function useUpdateQna(callbacks?: UseMutationCallback) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: updateQna,
+    mutationFn: updateQnaWithUploads,
     onSuccess: (updatedQna) => {
       if (callbacks?.onSuccess) callbacks.onSuccess();
 

@@ -73,6 +73,18 @@ export type Database = {
           },
         ]
       }
+      comment_count: {
+        Row: {
+          count: number | null
+        }
+        Insert: {
+          count?: number | null
+        }
+        Update: {
+          count?: number | null
+        }
+        Relationships: []
+      }
       like: {
         Row: {
           created_at: string
@@ -137,8 +149,8 @@ export type Database = {
           author_id: string
           content: string
           created_at: string
+          file_urls: string[] | null
           id: number
-          image_urls: string[] | null
           like_count: number
           reply_status: string
           title: string
@@ -147,8 +159,8 @@ export type Database = {
           author_id?: string
           content: string
           created_at?: string
+          file_urls?: string[] | null
           id?: number
-          image_urls?: string[] | null
           like_count?: number
           reply_status?: string
           title: string
@@ -157,8 +169,8 @@ export type Database = {
           author_id?: string
           content?: string
           created_at?: string
+          file_urls?: string[] | null
           id?: number
-          image_urls?: string[] | null
           like_count?: number
           reply_status?: string
           title?: string

@@ -57,7 +57,7 @@ export default function CommentEditor({
       )}
 
       {comments?.length === 0 ? (
-        <div className="border-t bg-gray-50 p-4 md:p-6">
+        <div className="mt-5 border-t bg-gray-50 p-4 md:p-6">
           <div className="mb-3 font-semibold">관리자 답변</div>
           <div className="text-sm leading-relaxed whitespace-pre-line md:text-base">
             담당자 확인중입니다. 빠른 시일내에 답변드리겠습니다.

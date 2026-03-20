@@ -1,4 +1,7 @@
 import QnaBg from "@/assets/images/qna_bg.jpg";
+import ThumbnailPDF from "@/assets/images/thumbnail_pdf.png";
+import ThumbnailEXCEL from "@/assets/images/thumbnail_excel.png";
+import ThumbnailFILE from "@/assets/images/thumbnail_file.png";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -8,16 +11,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateQna } from "@/hooks/mutations/qna/use-create-qna";
+import { getFileType } from "@/lib/get-file-type";
 import { useSession } from "@/store/session";
+import type { FileType, UploadFile } from "@/types";
 import { Paperclip, Pen, X, XIcon } from "lucide-react";
 import { useRef, useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
-
-type Image = {
-  file: File;
-  previewUrl: string;
-};
 
 export default function QnaDetailPage() {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ export default function QnaDetailPage() {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [images, setImages] = useState<Image[]>([]);
+  const [uploads, setUploads] = useState<UploadFile[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { mutate: createQna, isPending: isCreateQnaPending } = useCreateQna({
@@ -42,14 +42,32 @@ export default function QnaDetailPage() {
     },
   });
 
-  const handleSelectImages = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleSelectUploads = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
 
       files.forEach((file) => {
-        setImages((prev) => [
+        // 1. 중복 체크 로직
+        // 파일 이름과 크기가 모두 같으면 동일한 파일로 간주
+        const isDuplicate = uploads.some(
+          (upload) =>
+            upload.file!.name === file.name && upload.file!.size === file.size,
+        );
+
+        if (isDuplicate) {
+          alert(`"${file.name}" 파일은 이미 추가되었습니다.`);
+          return; // 중복이면 다음 파일로 넘어감
+        }
+
+        const fileType = getFileType(file);
+
+        setUploads((prev) => [
           ...prev,
-          { file, previewUrl: URL.createObjectURL(file) },
+          {
+            file,
+            previewUrl: URL.createObjectURL(file),
+            fileType: fileType,
+          },
         ]);
       });
     }
@@ -57,12 +75,12 @@ export default function QnaDetailPage() {
     e.target.value = "";
   };
 
-  const handleDeleteImage = (image: Image) => {
-    setImages((prevImages) =>
-      prevImages.filter((item) => item.previewUrl !== image.previewUrl),
+  const handleDeleteUpload = (upload: UploadFile) => {
+    setUploads((prevUploads) =>
+      prevUploads.filter((item) => item.previewUrl !== upload.previewUrl),
     );
 
-    URL.revokeObjectURL(image.previewUrl);
+    URL.revokeObjectURL(upload.previewUrl!);
   };
 
   const handleSaveQnaClick = () => {
@@ -77,8 +95,13 @@ export default function QnaDetailPage() {
     createQna({
       title,
       content,
+      uploads: uploads.flatMap((upload) => (upload.file ? [upload.file] : [])),
+      userId: session!.user.id,
     });
   };
+
+  const isPending = isCreateQnaPending;
+  //  const isPending = isCreateQnaPending || isUpdatePostPending;
 
   return (
     <div className="bg-background text-foreground min-h-screen">
@@ -109,6 +132,7 @@ export default function QnaDetailPage() {
             <div className="border-b p-4 md:p-5">
               <h2>
                 <Input
+                  disabled={isPending}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="문의제목"
@@ -119,6 +143,7 @@ export default function QnaDetailPage() {
 
             <div className="min-h-45 p-4 leading-relaxed whitespace-pre-line md:p-5">
               <Textarea
+                disabled={isPending}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 className="h-[30vh] resize-none py-4 md:h-[40vh]"
@@ -127,21 +152,48 @@ export default function QnaDetailPage() {
             </div>
 
             <div className="border-t border-b p-4 md:p-5">
-              {images.length > 0 && (
+              {uploads.length > 0 && (
                 <Carousel className="mb-5">
                   <CarouselContent>
-                    {images.map((image) => (
+                    {uploads.map((upload) => (
                       <CarouselItem
-                        className="basis-2/5"
-                        key={image.previewUrl}
+                        className="basis-1/5 md:basis-1/10"
+                        key={upload.previewUrl}
                       >
                         <div className="relative aspect-square w-full">
-                          <img
-                            src={image.previewUrl}
-                            className="h-full w-full rounded-sm object-cover"
-                          />
+                          {upload.fileType === "image" && (
+                            <img
+                              src={upload.previewUrl}
+                              className="h-full w-full rounded-sm object-cover"
+                            />
+                          )}
+
+                          {/* PDF */}
+                          {upload.fileType === "pdf" && (
+                            <img
+                              src={ThumbnailPDF}
+                              className="h-full w-full rounded-sm object-cover"
+                            />
+                          )}
+
+                          {/* EXCEL */}
+                          {upload.fileType === "excel" && (
+                            <img
+                              src={ThumbnailEXCEL}
+                              className="h-full w-full rounded-sm object-cover"
+                            />
+                          )}
+
+                          {/* ETC */}
+                          {upload.fileType === "etc" && (
+                            <img
+                              src={ThumbnailFILE}
+                              className="h-full w-full rounded-sm object-cover"
+                            />
+                          )}
+
                           <div
-                            onClick={() => handleDeleteImage(image)}
+                            onClick={() => handleDeleteUpload(upload)}
                             className="absolute top-0 right-0 m-1 cursor-pointer rounded-full bg-black/30 p-1"
                           >
                             <XIcon className="h-4 w-4 text-white" />
@@ -153,14 +205,16 @@ export default function QnaDetailPage() {
                 </Carousel>
               )}
               <input
-                onChange={handleSelectImages}
+                disabled={isPending}
+                onChange={handleSelectUploads}
                 ref={fileInputRef}
                 type="file"
                 accept="*"
                 multiple
-                // className="hidden"
+                className="hidden"
               />
               <Button
+                disabled={isPending}
                 onClick={() => {
                   fileInputRef.current?.click();
                 }}
@@ -176,6 +230,7 @@ export default function QnaDetailPage() {
 
           <div className="mt-8 flex justify-center gap-2">
             <Button
+              disabled={isPending}
               variant="outline"
               size="lg"
               onClick={() => navigate("/qna")}
@@ -185,6 +240,7 @@ export default function QnaDetailPage() {
               취소
             </Button>
             <Button
+              disabled={isPending}
               onClick={handleSaveQnaClick}
               size="lg"
               className="cursor-pointer"

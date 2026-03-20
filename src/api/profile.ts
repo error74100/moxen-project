@@ -1,6 +1,6 @@
 import supabase from "@/lib/supabase";
 import { getRandomNickname } from "@/lib/utils";
-import { deleteImagesInPath, uploadImage } from "./image";
+import { deleteFilesInPath, uploadFile } from "./file";
 
 export async function fetchProfile(userId: string) {
   const { data, error } = await supabase
@@ -47,7 +47,7 @@ export async function updateProfile({
 }) {
   // 1. 기존 아바타 이미지 삭제
   if (avatarImageFile) {
-    await deleteImagesInPath(`${userId}/avatar`);
+    await deleteFilesInPath(`${userId}/avatar`);
   }
 
   // 2. 새로운 아바타 이미지 업로드
@@ -55,7 +55,7 @@ export async function updateProfile({
   if (avatarImageFile) {
     const fileExtension = avatarImageFile.name.split(".").pop() || "webp";
     const filePath = `${userId}/avatar/${new Date().getTime()}-${crypto.randomUUID()}.${fileExtension}`;
-    newAvatarImageUrl = await uploadImage({
+    newAvatarImageUrl = await uploadFile({
       file: avatarImageFile,
       filePath,
     });

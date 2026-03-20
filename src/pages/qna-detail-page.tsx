@@ -14,7 +14,7 @@ import { useDeleteQna } from "@/hooks/mutations/qna/use-delete-qna";
 import { useQnaByIdData } from "@/hooks/queries/use-qna-by-id-data";
 import { formatTime } from "@/lib/time";
 import { useSession } from "@/store/session";
-import { SquarePen, TextAlignStart, Trash2 } from "lucide-react";
+import { Paperclip, SquarePen, TextAlignStart, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
@@ -22,6 +22,15 @@ import AvatarDefaultImg from "@/assets/images/avatar_default.png";
 import CommentEditor from "@/components/comment/comment-editor";
 import { useProfileData } from "@/hooks/queries/use-profile-data";
 import Loader from "@/components/loader";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import { getFileTypeFromUrl } from "@/lib/get-file-type";
+import ThumbnailPDF from "@/assets/images/thumbnail_pdf.png";
+import ThumbnailEXCEL from "@/assets/images/thumbnail_excel.png";
+import ThumbnailFILE from "@/assets/images/thumbnail_file.png";
 
 export default function QnaDetailPage() {
   const params = useParams();
@@ -147,9 +156,64 @@ export default function QnaDetailPage() {
                     </span>
                   )}
                 </div>
-
                 <div className="min-h-45 p-4 leading-relaxed whitespace-pre-line md:p-6">
                   {qna?.content}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 border-t p-4 text-sm text-gray-500 md:gap-x-6 md:p-5 md:text-base">
+                  <p className="flex w-full items-center gap-1 pb-2">
+                    <Paperclip className="h-4 w-4" />
+                    <span>첨부파일</span>
+                  </p>
+
+                  {/* 2-2. 첨부파일 캐러셀 */}
+                  <Carousel>
+                    <CarouselContent>
+                      {qna.file_urls?.map((url, index) => {
+                        const fileType = getFileTypeFromUrl(url);
+
+                        return (
+                          <CarouselItem
+                            className="basis-1/5 md:basis-1/10"
+                            key={index}
+                          >
+                            <div className="relative aspect-square w-full">
+                              {fileType === "image" && (
+                                <img
+                                  src={url}
+                                  className="h-full w-full rounded-sm object-cover"
+                                />
+                              )}
+
+                              {/* PDF */}
+                              {fileType === "pdf" && (
+                                <img
+                                  src={ThumbnailPDF}
+                                  className="h-full w-full rounded-sm object-cover"
+                                />
+                              )}
+
+                              {/* EXCEL */}
+                              {fileType === "excel" && (
+                                <img
+                                  src={ThumbnailEXCEL}
+                                  className="h-full w-full rounded-sm object-cover"
+                                />
+                              )}
+
+                              {/* ETC */}
+                              {fileType === "etc" && (
+                                <img
+                                  src={ThumbnailFILE}
+                                  className="h-full w-full rounded-sm object-cover"
+                                />
+                              )}
+                            </div>
+                          </CarouselItem>
+                        );
+                      })}
+                    </CarouselContent>
+                  </Carousel>
                 </div>
 
                 {/* 관리자 답변 */}

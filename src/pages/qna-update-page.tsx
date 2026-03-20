@@ -4,8 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useQnaByIdData } from "@/hooks/queries/use-qna-by-id-data";
 import { useSession } from "@/store/session";
-import { Save, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Paperclip, Save, X, XIcon } from "lucide-react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import {
@@ -19,6 +19,16 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useUpdateQna } from "@/hooks/mutations/qna/use-update-qna";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import type { UploadFile } from "@/types";
+import ThumbnailPDF from "@/assets/images/thumbnail_pdf.png";
+import ThumbnailEXCEL from "@/assets/images/thumbnail_excel.png";
+import ThumbnailFILE from "@/assets/images/thumbnail_file.png";
+import { getFileType, getFileTypeFromUrl } from "@/lib/get-file-type";
 
 export default function QnaUpdatePage() {
   const params = useParams();
@@ -52,6 +62,10 @@ export default function QnaUpdatePage() {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [uploads, setUploads] = useState<UploadFile[]>([]);
+  const [isUploadsChanged, setIsUploadsChanged] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [isOpen, setIsOpen] = useState(false);
   const [isSave, setIsSave] = useState(false);
 
@@ -65,9 +79,12 @@ export default function QnaUpdatePage() {
     }
 
     updateQna({
-      id: qnaId,
+      qnaId: qnaId,
       title: title,
       content: content,
+      uploads: uploads.flatMap((upload) => (upload.file ? [upload.file] : [])),
+      userId: session!.user.id,
+      isUploadsChanged: isUploadsChanged,
     });
   };
 
@@ -75,9 +92,66 @@ export default function QnaUpdatePage() {
     navigate(`/qna/${qnaId}`, { replace: true });
   };
 
+  const handleSelectUploads = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+
+      let added = false; // 파일변경여부 체크
+
+      files.forEach((file) => {
+        // 1. 중복 체크 로직
+        // 파일 이름과 크기가 모두 같으면 동일한 파일로 간주
+        const isDuplicate = uploads.some(
+          (upload) =>
+            upload.file &&
+            upload.file.name === file.name &&
+            upload.file.size === file.size,
+        );
+
+        if (isDuplicate) {
+          alert(`"${file.name}" 파일은 이미 추가되었습니다.`);
+          return; // 중복이면 다음 파일로 넘어감
+        }
+
+        const fileType = getFileType(file);
+
+        added = true; // 파일변경되면 true
+
+        setUploads((prev) => [
+          ...prev,
+          {
+            file,
+            previewUrl: URL.createObjectURL(file),
+            fileType: fileType,
+          },
+        ]);
+      });
+
+      if (added) setIsUploadsChanged(true); // 파일변경여부 감지
+    }
+
+    e.target.value = "";
+  };
+
+  const handleDeleteUpload = (upload: UploadFile) => {
+    setUploads((prevUploads) =>
+      prevUploads.filter((item) => item.previewUrl !== upload.previewUrl),
+    );
+
+    URL.revokeObjectURL(upload.previewUrl!);
+  };
+
   useEffect(() => {
     if (qna?.title) setTitle(qna.title);
     if (qna?.content) setContent(qna.content);
+    if (qna?.file_urls) {
+      setUploads(
+        qna.file_urls.map((url) => ({
+          previewUrl: url,
+          fileType: getFileTypeFromUrl(url),
+        })),
+      );
+    }
   }, [qna]);
 
   const isPending = isQnaPending || isUpdateQnaPending;
@@ -131,6 +205,82 @@ export default function QnaUpdatePage() {
                 className="h-[30vh] resize-none py-4 md:h-[40vh]"
                 placeholder="문의내용"
               />
+            </div>
+
+            <div className="border-t border-b p-4 md:p-5">
+              {uploads.length > 0 && (
+                <Carousel className="mb-5">
+                  <CarouselContent>
+                    {uploads.map((upload) => (
+                      <CarouselItem
+                        className="basis-1/5 md:basis-1/10"
+                        key={upload.previewUrl}
+                      >
+                        <div className="relative aspect-square w-full">
+                          {upload.fileType === "image" && (
+                            <img
+                              src={upload.previewUrl}
+                              className="h-full w-full rounded-sm object-cover"
+                            />
+                          )}
+
+                          {/* PDF */}
+                          {upload.fileType === "pdf" && (
+                            <img
+                              src={ThumbnailPDF}
+                              className="h-full w-full rounded-sm object-cover"
+                            />
+                          )}
+
+                          {/* EXCEL */}
+                          {upload.fileType === "excel" && (
+                            <img
+                              src={ThumbnailEXCEL}
+                              className="h-full w-full rounded-sm object-cover"
+                            />
+                          )}
+
+                          {/* ETC */}
+                          {upload.fileType === "etc" && (
+                            <img
+                              src={ThumbnailFILE}
+                              className="h-full w-full rounded-sm object-cover"
+                            />
+                          )}
+
+                          <div
+                            onClick={() => handleDeleteUpload(upload)}
+                            className="absolute top-0 right-0 m-1 cursor-pointer rounded-full bg-black/30 p-1"
+                          >
+                            <XIcon className="h-4 w-4 text-white" />
+                          </div>
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                </Carousel>
+              )}
+              <input
+                disabled={isPending}
+                onChange={handleSelectUploads}
+                ref={fileInputRef}
+                type="file"
+                accept="*"
+                multiple
+                className="hidden"
+              />
+              <Button
+                disabled={isPending}
+                onClick={() => {
+                  fileInputRef.current?.click();
+                }}
+                // disabled={isPending}
+                variant={"outline"}
+                className="cursor-pointer"
+              >
+                <Paperclip />
+                첨부파일 추가
+              </Button>
             </div>
           </div>
 

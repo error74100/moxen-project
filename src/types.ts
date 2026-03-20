@@ -18,3 +18,10 @@ export type UseMutationCallback = {
   onMutate?: () => void;
   onSettled?: () => void;
 };
+
+export type UploadFile = {
+  file?: File;
+  previewUrl?: string;
+  fileType?: FileType;
+};
+export type FileType = "image" | "pdf" | "excel" | "etc";

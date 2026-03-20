@@ -1,5 +1,6 @@
 import supabase from "@/lib/supabase";
 import type { PostEntity } from "@/types";
+import { uploadFile } from "./file";
 
 export async function fetchQnas({
   from,
@@ -85,46 +86,129 @@ export async function createQna({
   return data;
 }
 
-// export async function createQnaWithImages({
-//   content,
-//   images,
-//   userId,
-// }: {
-//   content: string;
-//   images: File[];
-//   userId: string;
-// }) {
-//   // 1. 새로운 포스트 생성
-//   const post = await createPost(content);
-//   if (images.length === 0) return post;
+export async function createQnaWithUploads({
+  title,
+  content,
+  uploads,
+  userId,
+}: {
+  title: string;
+  content: string;
+  uploads?: File[];
+  userId: string;
+}) {
+  // 1. 새로운 포스트 생성
+  const qna = await createQna({
+    title,
+    content,
+  });
+  if (uploads?.length === 0) return qna;
 
-//   try {
-//     // 2. 이미지 업로드
-//     const imageUrls = await Promise.all(
-//       images.map((image) => {
-//         const fileExtension = image.name.split(".").pop() || "webp";
-//         const fileName = `${Date.now()}-${crypto.randomUUID()}.${fileExtension}`;
-//         const filePath = `${userId}/${post.id}/${fileName}`;
+  try {
+    // 1. 기존 이미지 모두 삭제
+    // if (avatarImageFile) {
+    //   await deleteFilesInPath(`${userId}/avatar`);
+    // }
 
-//         return uploadImage({
-//           file: image,
-//           filePath,
-//         });
-//       }),
-//     );
+    // 2. 이미지 업로드
+    const fileUrls = await Promise.all(
+      uploads!.map((upload) => {
+        const fileExtension = upload.name.split(".").pop() || "webp";
+        const fileName = `${Date.now()}-${crypto.randomUUID()}.${fileExtension}`;
+        const filePath = `${userId}/${qna.id}/${fileName}`;
 
-//     // 3. 포스트 테이블 업데이트
-//     const updatedPost = await updatePost({
-//       id: post.id,
-//       image_urls: imageUrls,
-//     });
+        return uploadFile({
+          file: upload,
+          filePath,
+        });
+      }),
+    );
 
-//     return updatedPost;
-//   } catch (error) {
-//     await deletePost(post.id);
-//     throw error;
-//   }
-// }
+    // 3. 포스트 테이블 업데이트
+    const updatedPost = await updateQna({
+      id: qna.id,
+      file_urls: fileUrls,
+    });
+
+    return updatedPost;
+  } catch (error) {
+    await deleteQna(qna.id);
+    throw error;
+  }
+}
+
+export async function updateQnaWithUploads({
+  qnaId,
+  title,
+  content,
+  uploads,
+  // existingUrls = [], // 기존 파일 중 유지할 URL 리스트
+  // newUploads = [], // 새로 추가할 File 객체 리스트
+  userId,
+  isUploadsChanged,
+}: {
+  qnaId: number;
+  title: string;
+  content: string;
+  uploads?: File[];
+  // existingUrls?: string[];
+  // newUploads?: File[];
+  userId: string;
+  isUploadsChanged: boolean;
+}) {
+  try {
+    // 1. 새로 추가된 파일들 업로드
+    // let newFileUrls: string[] = [];
+
+    // if (newUploads.length > 0) {
+    //   newFileUrls = await Promise.all(
+    //     newUploads.map((file) => {
+    //       const fileExtension = file.name.split(".").pop() || "webp";
+    //       const fileName = `${Date.now()}-${crypto.randomUUID()}.${fileExtension}`;
+    //       // 경로 구조 유지: userId/postId/fileName
+    //       const filePath = `${userId}/${qnaId}/${fileName}`;
+
+    //       return uploadFile({
+    //         file,
+    //         filePath,
+    //       });
+    //     }),
+    //   );
+    // }
+
+    // 2. 최종적으로 DB에 저장될 파일 URL 합치기 (기존 유지 + 신규)
+    // const finalFileUrls = [...existingUrls, ...newFileUrls];
+
+    // 2. 이미지 업로드
+    const fileUrls = await Promise.all(
+      uploads!.map((upload) => {
+        const fileExtension = upload.name.split(".").pop() || "webp";
+        const fileName = `${Date.now()}-${crypto.randomUUID()}.${fileExtension}`;
+        const filePath = `${userId}/${qnaId}/${fileName}`;
+
+        return uploadFile({
+          file: upload,
+          filePath,
+        });
+      }),
+    );
+
+    console.log(isUploadsChanged);
+
+    // 3. 포스트 정보 업데이트 (제목, 내용, 파일 URL 리스트)
+    const updatedPost = await updateQna({
+      id: qnaId,
+      title,
+      content,
+      file_urls: fileUrls,
+    });
+
+    return updatedPost;
+  } catch (error) {
+    console.error("Update failed:", error);
+    throw error;
+  }
+}
 
 export async function updateQna(qna: Partial<PostEntity> & { id: number }) {
   const { data, error } = await supabase
@@ -149,19 +233,3 @@ export async function deleteQna(id: number) {
   if (error) throw error;
   return data;
 }
-
-// export async function toggleQnaLike({
-//   postId,
-//   userId,
-// }: {
-//   postId: number;
-//   userId: string;
-// }) {
-//   const { data, error } = await supabase.rpc("toggle_post_like", {
-//     p_post_id: postId,
-//     p_user_id: userId,
-//   });
-
-//   if (error) throw error;
-//   return data;
-// }
