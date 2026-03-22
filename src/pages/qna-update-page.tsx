@@ -78,6 +78,8 @@ export default function QnaUpdatePage() {
       return;
     }
 
+    console.log(isUploadsChanged);
+
     updateQna({
       qnaId: qnaId,
       title: title,
@@ -137,6 +139,8 @@ export default function QnaUpdatePage() {
     setUploads((prevUploads) =>
       prevUploads.filter((item) => item.previewUrl !== upload.previewUrl),
     );
+
+    setIsUploadsChanged(true);
 
     URL.revokeObjectURL(upload.previewUrl!);
   };

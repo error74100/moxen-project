@@ -166,8 +166,8 @@ export default function QnaDetailPage() {
                     <span>첨부파일</span>
                   </p>
 
-                  {/* 2-2. 첨부파일 캐러셀 */}
-                  <Carousel>
+                  {/* 첨부파일 캐러셀 */}
+                  <Carousel className="w-full">
                     <CarouselContent>
                       {qna.file_urls?.map((url, index) => {
                         const fileType = getFileTypeFromUrl(url);

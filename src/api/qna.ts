@@ -200,7 +200,8 @@ export async function updateQnaWithUploads({
       id: qnaId,
       title,
       content,
-      file_urls: fileUrls,
+      // file_urls: fileUrls,
+      ...(isUploadsChanged && { file_urls: fileUrls }),
     });
 
     return updatedPost;
