@@ -94,8 +94,7 @@ export async function createQnaWithUploads({
 }: {
   title: string;
   content: string;
-  // uploads?: File[];
-  uploads?: UploadFile[];
+  uploads?: File[];
   userId: string;
 }) {
   // 1. 새로운 포스트 생성
@@ -110,18 +109,14 @@ export async function createQnaWithUploads({
     // 1. 첨부파일 업로드
     const fileUrls = await Promise.all(
       uploads!.map((upload) => {
-        console.log(upload);
-        console.log(upload.file!.name);
+        const fileExtension = upload.name.split(".").pop() || "bin";
+        const fileName = `${Date.now()}-${crypto.randomUUID()}.${fileExtension}`;
+        const filePath = `${userId}/${qna.id}/${fileName}`;
 
-        // const fileExtension = upload.name.split(".").pop() || "webp";
-        // const fileExtension = upload.name.split(".").pop() || "webp";
-        // const fileName = `${Date.now()}-${crypto.randomUUID()}.${fileExtension}`;
-        // const filePath = `${userId}/${qna.id}/${fileName}`;
-
-        // return uploadFile({
-        //   file: upload,
-        //   filePath,
-        // });
+        return uploadFile({
+          file: upload,
+          filePath,
+        });
       }),
     );
 
@@ -150,7 +145,7 @@ export async function updateQnaWithUploads({
   qnaId: number;
   title: string;
   content: string;
-  uploads?: UploadFile[];
+  uploads?: File[];
   existingFileUrls?: string[];
   newUploads?: File[];
   userId: string;
@@ -160,8 +155,6 @@ export async function updateQnaWithUploads({
     const oldQna = await fetchQnaById({ qnaId: qnaId });
     const prevFileUrls: string[] = oldQna.file_urls ?? [];
     let updatedPost;
-
-    console.log(uploads);
 
     // 업로드파일 없을때
     if (!uploads || uploads.length === 0) {
@@ -177,15 +170,20 @@ export async function updateQnaWithUploads({
 
     // 1. 유지되는 파일 외의 파일 제거.
     // 현재 유지할 파일
+    // const existingFileUrls = uploads
+    //   .filter((file) => !!file.previewUrl)
+    //   .map((file) => file.previewUrl!);
+
     const existingFileUrls = uploads
-      .filter((file) => !!file.previewUrl)
-      .map((file) => file.previewUrl!);
+      .filter((file) => !!file.name)
+      .map((file) => file.name!);
 
     // 삭제 대상
     const filesToDelete = prevFileUrls.filter(
       (url) => !existingFileUrls.includes(url),
     );
 
+    console.log(existingFileUrls);
     console.log(filesToDelete);
 
     // 삭제할 첨부파일이 있을때
@@ -200,15 +198,27 @@ export async function updateQnaWithUploads({
       //     }),
       //   );
       // }
+    } else {
+      // 삭제할 첨부파일이 없을때
+      updatedPost = await updateQna({
+        id: qnaId,
+        title,
+        content,
+      });
+
+      return updatedPost;
     }
 
     console.log("add file..");
+
     // 2. 추가되는 첨부파일 추가.
     const fileUrls = await Promise.all(
       uploads!.map((upload) => {
         const fileExtension = upload.previewUrl!.split(".").pop() || "bin";
         const fileName = `${Date.now()}-${crypto.randomUUID()}.${fileExtension}`;
         const filePath = `${userId}/${qnaId}/${fileName}`;
+
+        console.log(upload);
 
         return uploadFile({
           file: upload.file!,

@@ -24,4 +24,5 @@ export type UploadFile = {
   previewUrl?: string;
   fileType?: FileType;
 };
+
 export type FileType = "image" | "pdf" | "excel" | "etc";
