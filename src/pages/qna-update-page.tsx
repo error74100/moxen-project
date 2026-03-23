@@ -66,6 +66,8 @@ export default function QnaUpdatePage() {
   const [isUploadsChanged, setIsUploadsChanged] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [allFiles, setAllFiles] = useState<UploadFile[]>([]);
+
   const [isOpen, setIsOpen] = useState(false);
   const [isSave, setIsSave] = useState(false);
 
@@ -78,15 +80,16 @@ export default function QnaUpdatePage() {
       return;
     }
 
-    console.log(isUploadsChanged);
+    console.log(uploads);
+    // console.log(uploads[0].file);
 
     updateQna({
       qnaId: qnaId,
       title: title,
       content: content,
-      uploads: uploads.flatMap((upload) => (upload.file ? [upload.file] : [])),
+      // uploads: uploads.flatMap((upload) => (upload.file ? [upload.file] : [])),
+      uploads: uploads,
       userId: session!.user.id,
-      isUploadsChanged: isUploadsChanged,
     });
   };
 
@@ -96,6 +99,36 @@ export default function QnaUpdatePage() {
 
   const handleSelectUploads = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
+      // const newFiles = Array.from(e.target.files);
+
+      // newFiles.forEach((file) => {
+      //   // 1. 중복 체크 로직
+      //   // 파일 이름과 크기가 모두 같으면 동일한 파일로 간주
+      //   const isDuplicate = uploads.some(
+      //     (upload) =>
+      //       upload.file &&
+      //       upload.file.name === file.name &&
+      //       upload.file.size === file.size,
+      //   );
+
+      //   if (isDuplicate) {
+      //     alert(`"${file.name}" 파일은 이미 추가되었습니다.`);
+      //     return; // 중복이면 다음 파일로 넘어감
+      //   }
+
+      //   const fileType2 = getFileType(file);
+
+      //   setAllFiles((prev) => [
+      //     ...prev,
+      //     {
+      //       file,
+      //       previewUrl: URL.createObjectURL(file),
+      //       fileType: fileType2,
+      //     },
+      //   ]);
+      // });
+
+      // 기존
       const files = Array.from(e.target.files);
 
       let added = false; // 파일변경여부 체크
