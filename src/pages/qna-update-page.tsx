@@ -246,7 +246,7 @@ export default function QnaUpdatePage() {
                             />
                           )}
 
-                          <p className="overflow-hidden pt-2 text-ellipsis whitespace-nowrap">
+                          <p className="overflow-hidden pt-2 text-xs text-ellipsis whitespace-nowrap">
                             {upload.previewUrl?.split("/").pop()}
                           </p>
 

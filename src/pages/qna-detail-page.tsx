@@ -204,7 +204,7 @@ export default function QnaDetailPage() {
                                   className="h-full w-full rounded-sm object-cover"
                                 />
                               )}
-                              <p className="overflow-hidden pt-2 text-ellipsis whitespace-nowrap">
+                              <p className="overflow-hidden pt-2 text-xs text-ellipsis whitespace-nowrap">
                                 {url.split("/").pop()}
                               </p>
                             </div>

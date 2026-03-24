@@ -192,6 +192,10 @@ export default function QnaDetailPage() {
                             />
                           )}
 
+                          <p className="overflow-hidden pt-2 text-xs text-ellipsis whitespace-nowrap">
+                            {upload.previewUrl?.split("/").pop()}
+                          </p>
+
                           <div
                             onClick={() => handleDeleteUpload(upload)}
                             className="absolute top-0 right-0 m-1 cursor-pointer rounded-full bg-black/30 p-1"
