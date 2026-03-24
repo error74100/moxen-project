@@ -38,3 +38,28 @@ export async function deleteFilesInPath(path: string) {
 
   if (removeError) throw removeError;
 }
+
+export async function deleteQnaFilesInPath({
+  path,
+  fileName,
+}: {
+  path: string;
+  fileName: string;
+}) {
+  const { data: files, error: fetchFilesError } = await supabase.storage
+    .from(BUCKET_NAME)
+    .list(path);
+
+  if (!path?.trim() || !fileName?.trim()) {
+    console.warn("삭제를 위한 경로 또는 파일명이 부족합니다.");
+    return;
+  }
+
+  if (fetchFilesError) throw fetchFilesError;
+
+  const { error: removeError } = await supabase.storage
+    .from(BUCKET_NAME)
+    .remove([`${path}/${fileName}`]);
+
+  if (removeError) throw removeError;
+}

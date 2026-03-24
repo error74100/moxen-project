@@ -1,6 +1,6 @@
 import supabase from "@/lib/supabase";
-import type { PostEntity, UploadFile } from "@/types";
-import { deleteFilesInPath, uploadFile } from "./file";
+import type { PostEntity } from "@/types";
+import { deleteQnaFilesInPath, uploadFile } from "./file";
 
 export async function fetchQnas({
   from,
@@ -111,7 +111,7 @@ export async function createQnaWithUploads({
       uploads!.map((upload) => {
         const fileExtension = upload.name.split(".").pop() || "bin";
         const fileName = `${Date.now()}-${crypto.randomUUID()}.${fileExtension}`;
-        const filePath = `${userId}/${qna.id}/${fileName}`;
+        const filePath = `${userId}/posts/${qna.id}/${fileName}`;
 
         return uploadFile({
           file: upload,
@@ -137,104 +137,60 @@ export async function updateQnaWithUploads({
   qnaId,
   title,
   content,
+  prevUploads,
   uploads,
-  existingFileUrls = [], // 프론트에서 유지하기로 한 기존 파일 URL 리스트
-  newUploads = [], // 새로 추가된 파일 객체
   userId,
 }: {
   qnaId: number;
   title: string;
   content: string;
-  uploads?: File[];
-  existingFileUrls?: string[];
-  newUploads?: File[];
+  prevUploads: string[];
+  uploads: File[];
   userId: string;
 }) {
   try {
-    // 1. 새로 추가된 파일들 업로드
     const oldQna = await fetchQnaById({ qnaId: qnaId });
     const prevFileUrls: string[] = oldQna.file_urls ?? [];
-    let updatedPost;
-
-    // 업로드파일 없을때
-    if (!uploads || uploads.length === 0) {
-      // 포스트 정보 업데이트 (제목, 내용)
-      updatedPost = await updateQna({
-        id: qnaId,
-        title,
-        content,
-      });
-
-      return updatedPost;
-    }
-
-    // 1. 유지되는 파일 외의 파일 제거.
-    // 현재 유지할 파일
-    // const existingFileUrls = uploads
-    //   .filter((file) => !!file.previewUrl)
-    //   .map((file) => file.previewUrl!);
-
-    const existingFileUrls = uploads
-      .filter((file) => !!file.name)
-      .map((file) => file.name!);
 
     // 삭제 대상
     const filesToDelete = prevFileUrls.filter(
-      (url) => !existingFileUrls.includes(url),
+      (url) => !prevUploads.includes(url),
     );
-
-    console.log(existingFileUrls);
-    console.log(filesToDelete);
 
     // 삭제할 첨부파일이 있을때
     if (filesToDelete.length > 0) {
-      console.log(11);
-      // if (filesToDelete) {
-      //   await Promise.all(
-      //     filesToDelete.map((url) => {
-      //       const fileName = url.split("/").pop()!;
+      await Promise.all(
+        filesToDelete.map((url) => {
+          const fileName = url.split("/").pop();
 
-      //       return deleteFilesInPath(`${userId}/${qnaId}/${fileName}`);
-      //     }),
-      //   );
-      // }
-    } else {
-      // 삭제할 첨부파일이 없을때
-      updatedPost = await updateQna({
-        id: qnaId,
-        title,
-        content,
-      });
-
-      return updatedPost;
+          return deleteQnaFilesInPath({
+            path: `${userId}/posts/${qnaId}`,
+            fileName: `${fileName}`,
+          });
+        }),
+      );
     }
 
-    console.log("add file..");
-
-    // 2. 추가되는 첨부파일 추가.
+    // 추가되는 첨부파일 추가.
     const fileUrls = await Promise.all(
-      uploads!.map((upload) => {
-        const fileExtension = upload.previewUrl!.split(".").pop() || "bin";
+      uploads?.map((upload) => {
+        const fileExtension = upload.name.split(".").pop() || "bin";
         const fileName = `${Date.now()}-${crypto.randomUUID()}.${fileExtension}`;
-        const filePath = `${userId}/${qnaId}/${fileName}`;
-
-        console.log(upload);
+        const filePath = `${userId}/posts/${qnaId}/${fileName}`;
 
         return uploadFile({
-          file: upload.file!,
+          file: upload,
           filePath,
         });
       }),
     );
 
-    console.log(fileUrls);
-
-    // 3. 포스트 테이블 업데이트
-    updatedPost = await updateQna({
+    // 포스트 테이블 업데이트
+    const updatedPost = await updateQna({
       id: qnaId,
       title,
       content,
-      // file_urls: fileUrls,
+      file_urls: [...prevUploads, ...fileUrls],
     });
 
     return updatedPost;

@@ -18,6 +18,7 @@ import { Paperclip, Pen, X, XIcon } from "lucide-react";
 import { useRef, useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
+import LoaderLayer from "@/components/loader-layer";
 
 export default function QnaDetailPage() {
   const navigate = useNavigate();
@@ -101,7 +102,6 @@ export default function QnaDetailPage() {
   };
 
   const isPending = isCreateQnaPending;
-  //  const isPending = isCreateQnaPending || isUpdatePostPending;
 
   return (
     <div className="bg-background text-foreground min-h-screen">
@@ -124,7 +124,7 @@ export default function QnaDetailPage() {
         </div>
       </section>
 
-      <section className="container mx-auto space-y-20 px-6 pt-20 pb-30">
+      <section className="relative container mx-auto space-y-20 px-6 pt-20 pb-30">
         <div className="space-y-10 text-center">
           <h2 className="text-2xl font-semibold md:text-3xl">입실문의</h2>
 
@@ -250,6 +250,8 @@ export default function QnaDetailPage() {
             </Button>
           </div>
         </div>
+
+        <LoaderLayer show={isPending} />
       </section>
     </div>
   );

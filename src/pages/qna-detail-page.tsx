@@ -31,6 +31,7 @@ import { getFileTypeFromUrl } from "@/lib/get-file-type";
 import ThumbnailPDF from "@/assets/images/thumbnail_pdf.png";
 import ThumbnailEXCEL from "@/assets/images/thumbnail_excel.png";
 import ThumbnailFILE from "@/assets/images/thumbnail_file.png";
+import LoaderLayer from "@/components/loader-layer";
 
 export default function QnaDetailPage() {
   const params = useParams();
@@ -79,11 +80,6 @@ export default function QnaDetailPage() {
   const isMine = userId === session?.user.id;
   const isAdmin = profile?.role === "admin";
 
-  // if (!isMine && !isAdmin) {
-  //   navigate("/qna/");
-  //   return;
-  // }
-
   useEffect(() => {
     if (qna && !isMine && !isAdmin) {
       navigate("/qna/");
@@ -123,7 +119,7 @@ export default function QnaDetailPage() {
 
       {!isPending && (
         <div>
-          <section className="container mx-auto space-y-20 px-6 pt-20 pb-30">
+          <section className="relative container mx-auto space-y-20 px-6 pt-20 pb-30">
             <div className="space-y-10 text-center">
               <h2 className="text-2xl font-semibold md:text-3xl">입실문의</h2>
 
@@ -208,6 +204,9 @@ export default function QnaDetailPage() {
                                   className="h-full w-full rounded-sm object-cover"
                                 />
                               )}
+                              <p className="overflow-hidden pt-2 text-ellipsis whitespace-nowrap">
+                                {url.split("/").pop()}
+                              </p>
                             </div>
                           </CarouselItem>
                         );
@@ -259,6 +258,8 @@ export default function QnaDetailPage() {
                 )}
               </div>
             </div>
+
+            <LoaderLayer show={isDeleteQnaPending} />
           </section>
 
           <AlertDialog open={isOpen} onOpenChange={setIsOpen}>

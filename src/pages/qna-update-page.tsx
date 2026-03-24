@@ -29,6 +29,7 @@ import ThumbnailPDF from "@/assets/images/thumbnail_pdf.png";
 import ThumbnailEXCEL from "@/assets/images/thumbnail_excel.png";
 import ThumbnailFILE from "@/assets/images/thumbnail_file.png";
 import { getFileType, getFileTypeFromUrl } from "@/lib/get-file-type";
+import LoaderLayer from "@/components/loader-layer";
 
 export default function QnaUpdatePage() {
   const params = useParams();
@@ -63,7 +64,6 @@ export default function QnaUpdatePage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [uploads, setUploads] = useState<UploadFile[]>([]);
-  const [isUploadsChanged, setIsUploadsChanged] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [allFiles, setAllFiles] = useState<UploadFile[]>([]);
@@ -80,15 +80,14 @@ export default function QnaUpdatePage() {
       return;
     }
 
-    console.log(uploads);
-    // console.log(uploads[0].file);
-
     updateQna({
       qnaId: qnaId,
       title: title,
       content: content,
-      // uploads: uploads.flatMap((upload) => (upload.file ? [upload.file] : [])),
-      uploads: uploads,
+      prevUploads: uploads.flatMap((upload) =>
+        !upload.file && upload.previewUrl ? [upload.previewUrl] : [],
+      ),
+      uploads: uploads.flatMap((upload) => (upload.file ? [upload.file] : [])),
       userId: session!.user.id,
     });
   };
@@ -99,39 +98,8 @@ export default function QnaUpdatePage() {
 
   const handleSelectUploads = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      // const newFiles = Array.from(e.target.files);
-
-      // newFiles.forEach((file) => {
-      //   // 1. 중복 체크 로직
-      //   // 파일 이름과 크기가 모두 같으면 동일한 파일로 간주
-      //   const isDuplicate = uploads.some(
-      //     (upload) =>
-      //       upload.file &&
-      //       upload.file.name === file.name &&
-      //       upload.file.size === file.size,
-      //   );
-
-      //   if (isDuplicate) {
-      //     alert(`"${file.name}" 파일은 이미 추가되었습니다.`);
-      //     return; // 중복이면 다음 파일로 넘어감
-      //   }
-
-      //   const fileType2 = getFileType(file);
-
-      //   setAllFiles((prev) => [
-      //     ...prev,
-      //     {
-      //       file,
-      //       previewUrl: URL.createObjectURL(file),
-      //       fileType: fileType2,
-      //     },
-      //   ]);
-      // });
-
       // 기존
       const files = Array.from(e.target.files);
-
-      let added = false; // 파일변경여부 체크
 
       files.forEach((file) => {
         // 1. 중복 체크 로직
@@ -150,8 +118,6 @@ export default function QnaUpdatePage() {
 
         const fileType = getFileType(file);
 
-        added = true; // 파일변경되면 true
-
         setUploads((prev) => [
           ...prev,
           {
@@ -161,8 +127,6 @@ export default function QnaUpdatePage() {
           },
         ]);
       });
-
-      if (added) setIsUploadsChanged(true); // 파일변경여부 감지
     }
 
     e.target.value = "";
@@ -172,8 +136,6 @@ export default function QnaUpdatePage() {
     setUploads((prevUploads) =>
       prevUploads.filter((item) => item.previewUrl !== upload.previewUrl),
     );
-
-    setIsUploadsChanged(true);
 
     URL.revokeObjectURL(upload.previewUrl!);
   };
@@ -194,7 +156,6 @@ export default function QnaUpdatePage() {
   const isPending = isQnaPending || isUpdateQnaPending;
 
   if (error) return "qna error..";
-  if (isPending) return "loading..";
 
   return (
     <div className="bg-background text-foreground min-h-screen">
@@ -217,7 +178,7 @@ export default function QnaUpdatePage() {
         </div>
       </section>
 
-      <section className="container mx-auto space-y-20 px-6 pt-20 pb-30">
+      <section className="relative container mx-auto space-y-20 px-6 pt-20 pb-30">
         <div className="space-y-10 text-center">
           <h2 className="text-2xl font-semibold md:text-3xl">
             입실문의 - 글수정
@@ -285,6 +246,10 @@ export default function QnaUpdatePage() {
                             />
                           )}
 
+                          <p className="overflow-hidden pt-2 text-ellipsis whitespace-nowrap">
+                            {upload.previewUrl?.split("/").pop()}
+                          </p>
+
                           <div
                             onClick={() => handleDeleteUpload(upload)}
                             className="absolute top-0 right-0 m-1 cursor-pointer rounded-full bg-black/30 p-1"
@@ -343,6 +308,8 @@ export default function QnaUpdatePage() {
             </Button>
           </div>
         </div>
+
+        <LoaderLayer show={isPending} />
       </section>
 
       <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
