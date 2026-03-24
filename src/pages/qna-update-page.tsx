@@ -271,18 +271,24 @@ export default function QnaUpdatePage() {
                 multiple
                 className="hidden"
               />
-              <Button
-                disabled={isPending}
-                onClick={() => {
-                  fileInputRef.current?.click();
-                }}
-                // disabled={isPending}
-                variant={"outline"}
-                className="cursor-pointer"
-              >
-                <Paperclip />
-                첨부파일 추가
-              </Button>
+              <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
+                <Button
+                  disabled={isPending}
+                  onClick={() => {
+                    fileInputRef.current?.click();
+                  }}
+                  // disabled={isPending}
+                  variant={"outline"}
+                  className="cursor-pointer"
+                >
+                  <Paperclip />
+                  첨부파일 추가
+                </Button>
+                <p className="text-muted-foreground text-sm">
+                  * 첨부파일은 이미지파일, pdf, xls, xlsx, ppt, pptx 파일만
+                  가능합니다.
+                </p>
+              </div>
             </div>
           </div>
 
