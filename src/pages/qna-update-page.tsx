@@ -30,6 +30,7 @@ import ThumbnailEXCEL from "@/assets/images/thumbnail_excel.png";
 import ThumbnailFILE from "@/assets/images/thumbnail_file.png";
 import { getFileType, getFileTypeFromUrl } from "@/lib/get-file-type";
 import LoaderLayer from "@/components/loader-layer";
+import { MAX_FILE_SIZE } from "@/lib/constants";
 
 export default function QnaUpdatePage() {
   const params = useParams();
@@ -100,6 +101,19 @@ export default function QnaUpdatePage() {
     if (e.target.files) {
       // 기존
       const files = Array.from(e.target.files);
+
+      // 5MB를 초과하는 파일이 있는지 확인
+      const largeFiles = files.filter((file) => file.size > MAX_FILE_SIZE);
+
+      if (largeFiles.length > 0) {
+        toast.error("5MB 이하의 파일만 업로드 가능합니다.", {
+          position: "top-center",
+        });
+
+        e.target.value = "";
+
+        return;
+      }
 
       files.forEach((file) => {
         // 1. 중복 체크 로직
@@ -211,14 +225,14 @@ export default function QnaUpdatePage() {
                   <CarouselContent>
                     {uploads.map((upload) => (
                       <CarouselItem
-                        className="basis-1/5 md:basis-1/10"
+                        className="basis-2/5 md:basis-1/7"
                         key={upload.previewUrl}
                       >
                         <div className="relative aspect-square w-full">
                           {upload.fileType === "image" && (
                             <img
                               src={upload.previewUrl}
-                              className="h-full w-full rounded-sm object-cover"
+                              className="h-full w-full rounded-sm border object-cover"
                             />
                           )}
 
@@ -226,7 +240,7 @@ export default function QnaUpdatePage() {
                           {upload.fileType === "pdf" && (
                             <img
                               src={ThumbnailPDF}
-                              className="h-full w-full rounded-sm object-cover"
+                              className="h-full w-full rounded-sm border object-cover"
                             />
                           )}
 
@@ -234,7 +248,7 @@ export default function QnaUpdatePage() {
                           {upload.fileType === "excel" && (
                             <img
                               src={ThumbnailEXCEL}
-                              className="h-full w-full rounded-sm object-cover"
+                              className="h-full w-full rounded-sm border object-cover"
                             />
                           )}
 
@@ -242,7 +256,7 @@ export default function QnaUpdatePage() {
                           {upload.fileType === "etc" && (
                             <img
                               src={ThumbnailFILE}
-                              className="h-full w-full rounded-sm object-cover"
+                              className="h-full w-full rounded-sm border object-cover"
                             />
                           )}
 
@@ -267,7 +281,7 @@ export default function QnaUpdatePage() {
                 onChange={handleSelectUploads}
                 ref={fileInputRef}
                 type="file"
-                accept="*"
+                accept="image/*, .pdf, .xls, .xlsx, .ppt, .pptx"
                 multiple
                 className="hidden"
               />
@@ -285,8 +299,8 @@ export default function QnaUpdatePage() {
                   첨부파일 추가
                 </Button>
                 <p className="text-muted-foreground text-sm">
-                  * 첨부파일은 이미지파일, pdf, xls, xlsx, ppt, pptx 파일만
-                  가능합니다.
+                  * 첨부파일은 5MB 이하 및 이미지파일, pdf, xls, xlsx, ppt, pptx
+                  파일만 가능합니다.
                 </p>
               </div>
             </div>

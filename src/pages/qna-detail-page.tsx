@@ -170,43 +170,45 @@ export default function QnaDetailPage() {
 
                         return (
                           <CarouselItem
-                            className="basis-1/5 md:basis-1/10"
+                            className="basis-2/5 md:basis-1/7"
                             key={index}
                           >
                             <div className="relative aspect-square w-full">
-                              {fileType === "image" && (
-                                <img
-                                  src={url}
-                                  className="h-full w-full rounded-sm object-cover"
-                                />
-                              )}
+                              <a href={url} target="_blank" className="group">
+                                {fileType === "image" && (
+                                  <img
+                                    src={url}
+                                    className="h-full w-full rounded-sm border object-cover"
+                                  />
+                                )}
 
-                              {/* PDF */}
-                              {fileType === "pdf" && (
-                                <img
-                                  src={ThumbnailPDF}
-                                  className="h-full w-full rounded-sm object-cover"
-                                />
-                              )}
+                                {/* PDF */}
+                                {fileType === "pdf" && (
+                                  <img
+                                    src={ThumbnailPDF}
+                                    className="h-full w-full rounded-sm border object-cover"
+                                  />
+                                )}
 
-                              {/* EXCEL */}
-                              {fileType === "excel" && (
-                                <img
-                                  src={ThumbnailEXCEL}
-                                  className="h-full w-full rounded-sm object-cover"
-                                />
-                              )}
+                                {/* EXCEL */}
+                                {fileType === "excel" && (
+                                  <img
+                                    src={ThumbnailEXCEL}
+                                    className="h-full w-full rounded-sm border object-cover"
+                                  />
+                                )}
 
-                              {/* ETC */}
-                              {fileType === "etc" && (
-                                <img
-                                  src={ThumbnailFILE}
-                                  className="h-full w-full rounded-sm object-cover"
-                                />
-                              )}
-                              <p className="overflow-hidden pt-2 text-xs text-ellipsis whitespace-nowrap">
-                                {url.split("/").pop()}
-                              </p>
+                                {/* ETC */}
+                                {fileType === "etc" && (
+                                  <img
+                                    src={ThumbnailFILE}
+                                    className="h-full w-full rounded-sm border object-cover"
+                                  />
+                                )}
+                                <p className="overflow-hidden pt-2 text-xs text-ellipsis whitespace-nowrap group-hover:underline">
+                                  {url.split("/").pop()}
+                                </p>
+                              </a>
                             </div>
                           </CarouselItem>
                         );

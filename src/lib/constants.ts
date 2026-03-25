@@ -31,4 +31,5 @@ export const QUERY_KEYS = {
 };
 
 export const BUCKET_NAME = "uploads";
-export const QNA_PAGE_SIZE = 5;
+export const QNA_PAGE_SIZE = 10;
+export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB를 바이트 단위로 계산

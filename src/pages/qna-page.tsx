@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useQnasData } from "@/hooks/queries/use-qnas-data";
 
 const faqs = [
   {
@@ -24,6 +25,13 @@ const faqs = [
 ];
 
 export default function QnaPage() {
+  const {
+    data: qnaListData,
+    error: qnaListError,
+    isPending: qnaListIsPending,
+    refetch: qnaListRefetch,
+  } = useQnasData(1, "");
+
   return (
     <div className="bg-background text-foreground min-h-screen">
       <section className="relative h-100 w-full overflow-hidden md:h-125">
@@ -51,7 +59,8 @@ export default function QnaPage() {
           <p className="text-muted-foreground mx-auto max-w-2xl">
             문의글 확인 후에 빠른 시일내에 답변드리도록 하겠습니다.
           </p>
-          <div className="text-right">
+          <div className="flex items-center justify-between text-right">
+            <p className="text-sm">총 {qnaListData?.totalCount}건</p>
             <QnaWriteButton />
           </div>
 
