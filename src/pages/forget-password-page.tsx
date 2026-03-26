@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { useRequestPasswordResetEmail } from "@/hooks/mutations/auth/use-request-password-reset-email";
 import { generateErrorMessage } from "@/lib/error";
 import { useState } from "react";
+import { Link } from "react-router";
 import { toast } from "sonner";
 
 export default function ForgetPasswordPage() {
@@ -65,6 +66,15 @@ export default function ForgetPasswordPage() {
           >
             인증메일 요청하기
           </Button>
+
+          <div className="flex justify-end">
+            <Link
+              to={"/sign-in"}
+              className="text-muted-foreground text-sm underline"
+            >
+              로그인
+            </Link>
+          </div>
         </div>
       </div>
     </div>
