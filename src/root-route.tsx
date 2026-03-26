@@ -15,6 +15,12 @@ import ProfileDetailPage from "./pages/profile-detail-page";
 import QnaDetailPage from "./pages/qna-detail-page";
 import QnaWritePage from "./pages/qna-write-page";
 import QnaUpdatePage from "./pages/qna-update-page";
+import AdminOnlyLayout from "./admin/components/layout/admin-only-layout";
+import AdminGlobalLayout from "./admin/components/layout/admin-global-layout";
+import AdminDashboardPage from "./admin/pages/admin-dashboard-page";
+import AdminUserPage from "./admin/pages/admin-user-page";
+import AdminQnaPage from "./admin/pages/admin-qna-page";
+import AdminFaqPage from "./admin/pages/admin-faq-page";
 
 export default function RootRoute() {
   return (
@@ -36,17 +42,19 @@ export default function RootRoute() {
         <Route path="/forget-password" element={<ForgetPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/profile/:userId" element={<ProfileDetailPage />} />
-
-        <Route path="*" element={<Navigate to={"/"} />} />
-
-        {/* <Route element={<GuestOnlyLayout />}> */}
-        {/* <Route path="/sign-in" element={<SignInPage />} /> */}
-        {/* </Route> */}
-
-        {/* <Route element={<MemberOnlyLayout />}> */}
-        {/* <Route path="/" element={<IndexPage />} /> */}
-        {/* </Route> */}
       </Route>
+
+      {/* 관리자페이지 */}
+      <Route element={<AdminOnlyLayout />}>
+        <Route element={<AdminGlobalLayout />}>
+          <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+          <Route path="/admin/user" element={<AdminUserPage />} />
+          <Route path="/admin/qna" element={<AdminQnaPage />} />
+          <Route path="/admin/faq" element={<AdminFaqPage />} />
+        </Route>
+      </Route>
+
+      <Route path="*" element={<Navigate to={"/"} />} />
     </Routes>
   );
 }

@@ -16,12 +16,22 @@ import {
 } from "../ui/alert-dialog";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useProfileData } from "@/hooks/queries/use-profile-data";
 
 export default function ProfileButton() {
   const session = useSession();
   const [isOpen, setIsOpen] = useState(false);
 
   const navigate = useNavigate();
+
+  const {
+    data: profile,
+    error: fetchProfileError,
+    isLoading: isFetchingProfileLoading,
+    fetchStatus: isFetchingProfileStatus,
+  } = useProfileData({ userId: session?.user.id });
+
+  const isAdmin = profile?.role === "admin";
 
   const handleLogOutActionClick = () => {
     signOut();
@@ -38,7 +48,7 @@ export default function ProfileButton() {
           <PopoverTrigger>
             <UserRound className="h-5 w-5 cursor-pointer hover:text-blue-400" />
           </PopoverTrigger>
-          <PopoverContent className="flex w-40 flex-col overflow-hidden p-0">
+          <PopoverContent className="mr-4 flex w-40 flex-col overflow-hidden p-0">
             <PopoverClose asChild>
               <Link to={`/profile/${session.user.id}`}>
                 <div className="hover:bg-muted cursor-pointer px-4 py-3 text-sm">
@@ -54,6 +64,18 @@ export default function ProfileButton() {
                 로그아웃
               </div>
             </PopoverClose>
+            {isAdmin && (
+              <PopoverClose asChild>
+                <div
+                  onClick={() =>
+                    navigate("/admin/dashboard", { replace: true })
+                  }
+                  className="hover:bg-muted cursor-pointer px-4 py-3 text-sm text-blue-500"
+                >
+                  관리자페이지
+                </div>
+              </PopoverClose>
+            )}
           </PopoverContent>
         </Popover>
       ) : (
