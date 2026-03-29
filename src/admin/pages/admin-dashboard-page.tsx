@@ -1,93 +1,162 @@
 import {
-  ArrowUpRight,
-  MessageSquare,
-  MoreHorizontal,
-  Users,
-} from "lucide-react";
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line, Bar } from "react-chartjs-2";
+import { ChevronRight, FileText, User, UsersRound } from "lucide-react";
 
-const StatCard = ({
-  title,
-  value,
-  increment,
-  icon,
-}: {
-  title: string;
-  value: string;
-  increment: string;
-  icon: React.ReactNode;
-}) => (
-  <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-    <div className="flex items-center justify-between">
-      <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-100 bg-gray-50">
-        {icon}
-      </div>
-      <div className="flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-600">
-        <ArrowUpRight size={14} />
-        {increment}
-      </div>
-    </div>
-    <div className="mt-4">
-      <p className="text-sm font-medium text-gray-500">{title}</p>
-      <h4 className="mt-1 text-2xl font-bold text-gray-900">{value}</h4>
-    </div>
-  </div>
+// 1. Chart.js 필수 요소 등록
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
 );
 
-const ChartPlaceholder = ({ title }: { title: string }) => (
-  <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-    <div className="mb-6 flex items-center justify-between">
-      <h3 className="font-bold text-gray-800">{title}</h3>
-      <button className="text-gray-400 hover:text-gray-600">
-        <MoreHorizontal size={20} />
-      </button>
-    </div>
-    {/* 실제 차트가 들어갈 자리 */}
-    <div className="flex h-64 items-end justify-between gap-2 px-2">
-      {[40, 70, 45, 90, 65, 80, 50, 85, 60, 75, 55, 95].map((height, i) => (
-        <div
-          key={i}
-          className="group relative w-full cursor-pointer rounded-t-sm bg-indigo-100 transition-colors hover:bg-indigo-500"
-          style={{ height: `${height}%` }}
-        >
-          <div className="absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-slate-800 px-2 py-1 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100">
-            {height * 10}
-          </div>
-        </div>
-      ))}
-    </div>
-    <div className="mt-4 flex justify-between px-1 text-[10px] font-medium text-gray-400">
-      <span>1월</span>
-      <span>3월</span>
-      <span>6월</span>
-      <span>9월</span>
-      <span>12월</span>
-    </div>
-  </div>
-);
+// 2. 공통 차트 옵션 설정
+const commonOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: false, // 범례 숨김 (깔끔한 대시보드를 위해)
+    },
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      grid: { color: "#f3f4f6" },
+    },
+    x: {
+      grid: { display: false },
+    },
+  },
+};
+
+// 3. 차트 데이터 설정
+const userData = {
+  labels: ["1월", "2월", "3월", "4월", "5월", "6월"],
+  datasets: [
+    {
+      label: "가입자 수",
+      data: [120, 190, 300, 500, 450, 700],
+      borderColor: "rgb(79, 70, 229)", // Indigo 600
+      backgroundColor: "rgba(79, 70, 229, 0.5)",
+      tension: 0.4, // 선을 부드럽게
+    },
+  ],
+};
+
+const inquiryData = {
+  labels: ["월", "화", "수", "목", "금", "토", "일"],
+  datasets: [
+    {
+      label: "문의 건수",
+      data: [12, 19, 3, 5, 2, 3, 9],
+      backgroundColor: "rgba(16, 185, 129, 0.8)", // Emerald 500
+      borderRadius: 6,
+    },
+  ],
+};
 
 export default function AdminDashboardPage() {
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="mx-auto">
       <div className="space-y-6">
-        {/* 1. 상단 통계 카드 */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2">
-          <StatCard
-            title="총 사용자"
-            value="1,284명"
-            increment="+12%"
-            icon={<Users className="text-indigo-600" size={24} />}
-          />
-          <StatCard
-            title="신규 문의"
-            value="42건"
-            increment="+5%"
-            icon={<MessageSquare className="text-emerald-600" size={24} />}
-          />
+        {/* 상단 통계 카드 */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center gap-2">
+              <UsersRound size={18} className="text-indigo-500" />
+              <h3 className="font-bold text-gray-800">사용자</h3>
+            </div>
+            <div className="my-4 grid grid-cols-3 gap-3">
+              <div className="flex flex-col items-center justify-center rounded-lg border border-gray-100 bg-gray-50 py-3">
+                <span className="text-sm font-medium tracking-wider text-gray-500 uppercase">
+                  전체
+                </span>
+                <span className="mt-1 text-lg font-bold text-gray-900">
+                  10명
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center justify-center rounded-lg border border-amber-100 bg-amber-50/50 py-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-medium tracking-wider text-amber-700 uppercase">
+                    Email 가입
+                  </span>
+                </div>
+                <span className="mt-1 text-lg font-bold text-amber-600">
+                  2명
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center justify-center rounded-lg border border-emerald-100 bg-emerald-50/50 py-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-medium tracking-wider text-emerald-700 uppercase">
+                    Social 가입
+                  </span>
+                </div>
+                <span className="mt-1 text-lg font-bold text-emerald-600">
+                  8명
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center gap-2">
+              <FileText size={18} className="text-emerald-500" />
+              <h3 className="font-bold text-gray-800">문의 현황</h3>
+            </div>
+            <div className="my-4 grid grid-cols-3 gap-3">
+              <div className="flex flex-col items-center justify-center rounded-lg border border-gray-100 bg-gray-50 py-3">
+                <span className="text-sm font-medium tracking-wider text-gray-500 uppercase">
+                  총 건수
+                </span>
+                <span className="mt-1 text-lg font-bold text-gray-900">
+                  10건
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center justify-center rounded-lg border border-amber-100 bg-amber-50/50 py-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-medium tracking-wider text-amber-700 uppercase">
+                    답변대기
+                  </span>
+                </div>
+                <span className="mt-1 text-lg font-bold text-amber-600">
+                  2건
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center justify-center rounded-lg border border-emerald-100 bg-emerald-50/50 py-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-medium tracking-wider text-emerald-700 uppercase">
+                    답변완료
+                  </span>
+                </div>
+                <span className="mt-1 text-lg font-bold text-emerald-600">
+                  8건
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* 2. 실제 Chart.js 적용 영역 */}
+        {/* 차트 영역 */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {/* 사용자 가입 추이 (Line) */}
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <h3 className="mb-6 font-bold text-gray-800">사용자 가입 추이</h3>
             <div className="h-64">
@@ -95,7 +164,6 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* 문의글 등록 현황 (Bar) */}
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <h3 className="mb-6 font-bold text-gray-800">일주일 문의 현황</h3>
             <div className="h-64">
@@ -104,9 +172,108 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* 3. 하단 테이블 영역 (생략 - 이전과 동일) */}
-        <div className="rounded-xl border-2 border-dashed py-10 text-center text-sm text-gray-400">
-          최근 목록 테이블이 들어가는 자리입니다.
+        {/* 하단 목록 영역 (최근 가입자 & 최근 문의글) */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* 왼쪽: 최근 가입자 5개 */}
+          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="flex items-center justify-between border-b border-gray-100 p-5">
+              <h3 className="flex items-center gap-2 font-bold text-gray-800">
+                <User size={18} className="text-indigo-500" />
+                최근 가입자
+              </h3>
+              <button className="flex items-center text-xs font-medium text-gray-400 hover:text-indigo-600">
+                전체보기 <ChevronRight size={14} />
+              </button>
+            </div>
+            <div className="divide-y divide-gray-50">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-4 transition-colors hover:bg-gray-50"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-50 text-xs font-semibold text-indigo-600">
+                      JD
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-800">
+                        사용자_{i}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[11px] text-gray-400">2시간 전</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 최근 문의글 5개 */}
+          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="flex items-center justify-between border-b border-gray-100 p-5">
+              <h3 className="flex items-center gap-2 font-bold text-gray-800">
+                <FileText size={18} className="text-emerald-500" />
+                최근 문의글
+              </h3>
+              <button className="flex items-center text-xs font-medium text-gray-400 hover:text-emerald-600">
+                전체보기 <ChevronRight size={14} />
+              </button>
+            </div>
+            <div className="divide-y divide-gray-50">
+              {[
+                {
+                  title: "로그인이 안 돼요",
+                  status: "답변대기",
+                  color: "amber",
+                },
+                {
+                  title: "결제 취소 요청합니다",
+                  status: "답변완료",
+                  color: "emerald",
+                },
+                {
+                  title: "서비스 이용 방법 문의",
+                  status: "답변완료",
+                  color: "emerald",
+                },
+                {
+                  title: "비밀번호 재설정 관련",
+                  status: "답변대기",
+                  color: "amber",
+                },
+                {
+                  title: "기능 제안 피드백",
+                  status: "답변완료",
+                  color: "emerald",
+                },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-4 transition-colors hover:bg-gray-50"
+                >
+                  <div className="min-w-0 flex-1 pr-4">
+                    <p className="truncate text-sm font-semibold text-gray-800">
+                      {item.title}
+                    </p>
+                    <p className="mt-0.5 text-xs text-gray-500">
+                      작성자: 홍길동
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                        item.color === "amber"
+                          ? "bg-amber-50 text-amber-600"
+                          : "bg-emerald-50 text-emerald-600"
+                      }`}
+                    >
+                      {item.status}
+                    </span>
+                    <span className="text-[10px] text-gray-400">14:20</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import Logo from "/logo.png";
-import { LogOut, Menu, UserRound, X } from "lucide-react";
+import { LogOut, Menu, MonitorCog, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   Sheet,
@@ -18,6 +18,7 @@ import { useSession } from "@/store/session";
 import ProfileButton from "./profile-button";
 import { signOut } from "@/api/auth";
 import { toast } from "sonner";
+import { useProfileData } from "@/hooks/queries/use-profile-data";
 
 const headerBgPages = [
   "/sign-in",
@@ -36,8 +37,16 @@ export default function GlobalLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isMobile = useIsMobile();
-
   const session = useSession();
+
+  const {
+    data: profile,
+    error: fetchProfileError,
+    isLoading: isFetchingProfileLoading,
+    fetchStatus: isFetchingProfileStatus,
+  } = useProfileData({ userId: session?.user.id });
+
+  const isAdmin = profile?.role === "admin";
 
   useMoveScrollTop();
 
@@ -168,6 +177,12 @@ export default function GlobalLayout() {
                             onClick={handleLogOutActionClick}
                             className="h-5 w-5 cursor-pointer hover:text-blue-400"
                           />
+                          {isAdmin && (
+                            <MonitorCog
+                              onClick={() => navigate("/admin/dashboard")}
+                              className="h-5 w-5 cursor-pointer hover:text-blue-400"
+                            />
+                          )}
                         </div>
                       ) : (
                         <p
