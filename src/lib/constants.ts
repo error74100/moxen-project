@@ -28,6 +28,10 @@ export const QUERY_KEYS = {
     all: ["comment"],
     qna: (qnaId: number) => ["comment", "qna", qnaId],
   },
+  faq: {
+    all: ["faq"],
+    list: ["faq", "list"],
+  },
 };
 
 export const BUCKET_NAME = "uploads";

@@ -85,6 +85,27 @@ export type Database = {
         }
         Relationships: []
       }
+      faq: {
+        Row: {
+          answer: string
+          created_at: string
+          id: number
+          question: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: number
+          question: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: number
+          question?: string
+        }
+        Relationships: []
+      }
       like: {
         Row: {
           created_at: string
