@@ -122,6 +122,7 @@ export type Database = {
           email: string
           id: string
           nickname: string
+          provider_type: string | null
           role: string
         }
         Insert: {
@@ -131,6 +132,7 @@ export type Database = {
           email?: string
           id?: string
           nickname?: string
+          provider_type?: string | null
           role?: string
         }
         Update: {
@@ -140,6 +142,7 @@ export type Database = {
           email?: string
           id?: string
           nickname?: string
+          provider_type?: string | null
           role?: string
         }
         Relationships: []

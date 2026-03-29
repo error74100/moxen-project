@@ -3,22 +3,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Calendar,
-  ChevronLeft,
-  ChevronRight,
-  Download,
-  Filter,
-  LogIn,
-  Mail,
-  MoreVertical,
-  Plus,
-  Search,
-  Share2,
-  UserRound,
-} from "lucide-react";
+import { Calendar, LogIn, MoreVertical } from "lucide-react";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { Link } from "react-router";
+import Loader from "@/components/loader";
+import { useProfileAllData } from "@/hooks/queries/use-profile-all-data";
+import { formatTime } from "@/lib/time";
 
 const users = [
   {
@@ -64,6 +54,25 @@ const users = [
 ];
 
 export default function AdminUserPage() {
+  const {
+    data: profile,
+    error: fetchProfileError,
+    isLoading: isFetchingProfileLoading,
+    fetchStatus: isFetchingProfileStatus,
+  } = useProfileAllData();
+
+  if (isFetchingProfileLoading) {
+    return <Loader />;
+  }
+
+  if (fetchProfileError) {
+    return (
+      <div className="rounded-lg bg-red-50 p-4 text-red-500">
+        에러 발생: {fetchProfileError?.message}
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto">
       <div className="mb-4">
@@ -87,107 +96,118 @@ export default function AdminUserPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {users.map((user, i) => (
-                    <tr key={i} className="hover:bg-gray-50/50">
-                      <td className="px-6 py-4">
-                        <div>{user.email}</div>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${user.type === "이메일" ? "bg-gray-100 text-gray-600" : "bg-indigo-50 text-indigo-600"}`}
-                        >
-                          {user.provider === "mail" ? (
-                            <Mail size={10} />
-                          ) : (
-                            <Share2 size={10} />
-                          )}
-                          {user.type}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-gray-600">{user.date}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1.5 text-gray-700">
-                          <div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>{" "}
-                          {/* 접속 상태 표시등 */}
-                          {user.lastLogin}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <Popover>
-                          <PopoverTrigger>
-                            <MoreVertical
-                              size={18}
-                              className="cursor-pointer hover:text-blue-400"
-                            />
-                          </PopoverTrigger>
-                          <PopoverContent className="mr-15 flex w-24 flex-col overflow-hidden p-0">
-                            <PopoverClose asChild>
-                              <Link to={`/profile/`}>
-                                <div className="hover:bg-muted cursor-pointer px-4 py-3 text-xs">
-                                  삭제
-                                </div>
-                              </Link>
-                            </PopoverClose>
-                          </PopoverContent>
-                        </Popover>
-                      </td>
-                    </tr>
-                  ))}
+                  {profile &&
+                    profile.map((user, i) => (
+                      <tr key={i} className="hover:bg-gray-50/50">
+                        <td className="px-6 py-4">
+                          <div>{user.email}</div>
+                          <div className="text-muted-foreground text-xs">
+                            {user.nickname}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          {/* <span
+                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${user.type === "이메일" ? "bg-gray-100 text-gray-600" : "bg-indigo-50 text-indigo-600"}`}
+                          > */}
+                          {/* {user.provider === "mail" ? (
+                              <Mail size={10} />
+                            ) : (
+                              <Share2 size={10} />
+                            )} */}
+                          {/* {user.type} */}
+                          1111
+                          {/* </span> */}
+                        </td>
+                        <td className="px-6 py-4 text-gray-600">
+                          {formatTime(user.created_at)}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-1.5 text-gray-700">
+                            {/* 접속 상태 표시등 */}
+                            {/* <div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div> */}
+                            {formatTime(user.created_at)}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <Popover>
+                            <PopoverTrigger>
+                              <MoreVertical
+                                size={18}
+                                className="cursor-pointer hover:text-blue-400"
+                              />
+                            </PopoverTrigger>
+                            <PopoverContent className="mr-15 flex w-24 flex-col overflow-hidden p-0">
+                              <PopoverClose asChild>
+                                <Link to={`/profile/`}>
+                                  <div className="hover:bg-muted cursor-pointer px-4 py-3 text-xs">
+                                    삭제
+                                  </div>
+                                </Link>
+                              </PopoverClose>
+                            </PopoverContent>
+                          </Popover>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
 
             {/* 2. 모바일 뷰 (카드 형식) */}
             <div className="block divide-y divide-gray-100 md:hidden">
-              {users.map((user, i) => (
-                <div key={i} className="space-y-3 p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span>{user.email}</span>
+              {profile &&
+                profile.map((user, i) => (
+                  <div key={i} className="space-y-3 p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col items-start gap-2">
+                        <span>{user.email}</span>
+                        <div className="text-muted-foreground text-xs">
+                          {user.nickname}
+                        </div>
+                      </div>
+                      <Popover>
+                        <PopoverTrigger>
+                          <MoreVertical
+                            size={18}
+                            className="cursor-pointer hover:text-blue-400"
+                          />
+                        </PopoverTrigger>
+                        <PopoverContent className="mr-15 flex w-24 flex-col overflow-hidden p-0">
+                          <PopoverClose asChild>
+                            <Link to={`/profile/`}>
+                              <div className="hover:bg-muted cursor-pointer px-4 py-3 text-xs">
+                                삭제
+                              </div>
+                            </Link>
+                          </PopoverClose>
+                        </PopoverContent>
+                      </Popover>
                     </div>
-                    <Popover>
-                      <PopoverTrigger>
-                        <MoreVertical
-                          size={18}
-                          className="cursor-pointer hover:text-blue-400"
-                        />
-                      </PopoverTrigger>
-                      <PopoverContent className="mr-15 flex w-24 flex-col overflow-hidden p-0">
-                        <PopoverClose asChild>
-                          <Link to={`/profile/`}>
-                            <div className="hover:bg-muted cursor-pointer px-4 py-3 text-xs">
-                              삭제
-                            </div>
-                          </Link>
-                        </PopoverClose>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
 
-                  <div className="space-y-2">
-                    {/* 가입경로 + 날짜 정보 라인 */}
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
-                      <span
-                        className={`rounded px-2 py-0.5 text-[10px] font-bold ${user.type === "이메일" ? "bg-gray-100 text-gray-600" : "bg-indigo-50 text-indigo-600"}`}
-                      >
-                        {user.type}
-                      </span>
-                      <div className="flex items-center gap-1 text-[11px] text-gray-400">
-                        <Calendar size={12} />
-                        <span className="inline-block pt-0.75 align-middle">
-                          {user.date}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1 text-[11px] font-medium text-indigo-500">
-                        <LogIn size={12} />
-                        <span className="inline-block pt-0.75 align-middle">
-                          {user.lastLogin}
-                        </span>
+                    <div className="space-y-2">
+                      {/* 가입경로 + 날짜 정보 라인 */}
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
+                        {/* <span
+                          className={`rounded px-2 py-0.5 text-[10px] font-bold ${user.type === "이메일" ? "bg-gray-100 text-gray-600" : "bg-indigo-50 text-indigo-600"}`}
+                        > */}
+                        {/* {user.type} */}
+                        {/* </span> */}
+                        <div className="flex items-center gap-1 text-[11px] text-gray-400">
+                          <Calendar size={12} />
+                          <span className="inline-block pt-0.75 align-middle">
+                            {formatTime(user.created_at)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 text-[11px] font-medium text-indigo-500">
+                          <LogIn size={12} />
+                          <span className="inline-block pt-0.75 align-middle">
+                            {formatTime(user.created_at)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </div>

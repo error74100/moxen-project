@@ -27,6 +27,8 @@ export default function ProfileDetailPage() {
   const [bio, setBio] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [test, setTest] = useState("");
+
   const {
     data: profile,
     error: fetchProfileError,
@@ -121,7 +123,7 @@ export default function ProfileDetailPage() {
           <section className="px-6 pb-20 md:pb-40">
             <div className="mx-auto mb-15 max-w-md pt-10 text-center md:pt-30">
               <h2 className="mb-5 text-2xl font-semibold md:text-3xl">
-                내정보
+                내정보/{test}
               </h2>
 
               <div className="space-y-6 rounded-xl border bg-white p-6">

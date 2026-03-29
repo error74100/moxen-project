@@ -14,6 +14,8 @@ export function useProfileData({
   const session = useSession();
   const isMine = userId === session?.user.id;
 
+  const rawProvider = session?.user?.app_metadata?.provider;
+
   return useQuery({
     queryKey: QUERY_KEYS.profile.byId(userId!),
     queryFn: async () => {
@@ -22,11 +24,15 @@ export function useProfileData({
         return profile;
       } catch (error) {
         if (isMine && (error as PostgrestError).code === "PGRST116") {
-          return await createProfile({ userId: userId, userEmail: userEmail });
+          return await createProfile({
+            userId: userId,
+            userEmail: userEmail,
+            provider: rawProvider || "social",
+          });
         }
         throw error;
       }
     },
-    enabled: !!userId,
+    enabled: !!userId && (!isMine || !!session),
   });
 }

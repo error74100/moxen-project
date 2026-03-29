@@ -13,19 +13,31 @@ export async function fetchProfile(userId: string) {
   return data;
 }
 
+export async function fetchProfileAll() {
+  const { data, error } = await supabase.from("profile").select("*");
+
+  if (error) throw error;
+  return data;
+}
+
 export async function createProfile({
   userId,
   userEmail,
+  provider,
 }: {
   userId?: string;
   userEmail?: string;
+  provider?: string;
 }) {
+  const providerType = provider === "email" ? "email" : "social";
+
   const { data, error } = await supabase
     .from("profile")
     .insert({
       id: userId,
       nickname: getRandomNickname(),
       email: userEmail,
+      provider_type: providerType,
     })
     .select()
     .single();
