@@ -5,13 +5,11 @@ import {
   Edit3,
   Eye,
   EyeOff,
-  GripVertical,
   HelpCircle,
   Plus,
-  Search,
   Trash2,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -63,10 +61,21 @@ const faqs = [
 export default function AdminFaqPage() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState("");
 
   const toggleExpand = (id: number) => {
     setExpandedId(expandedId === id ? null : id);
   };
+
+  const handleCreateFaqAction = () => {
+    if (question.trim() === "" || answer.trim() === "") return;
+  };
+
+  useEffect(() => {
+    setQuestion("");
+    setAnswer("");
+  }, [isOpen]);
 
   return (
     <div className="mx-auto">
@@ -209,26 +218,30 @@ export default function AdminFaqPage() {
             </AlertDialogDescription>
             <div className="w-full">
               <div className="flex w-full flex-col gap-2 border-b py-4 md:flex-row md:items-center md:justify-between">
-                <label className="shrink-0 font-semibold text-gray-700 md:w-15">
+                <label className="shrink-0 text-left font-semibold text-gray-700 md:w-15">
                   Q. 질문
                 </label>
 
                 <div className="w-full md:flex-1">
                   <Input
                     type="text"
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
                     className="w-full rounded-md border border-gray-300 px-2 py-5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     placeholder="질문을 입력하세요"
                   />
                 </div>
               </div>
               <div className="flex w-full flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between">
-                <label className="shrink-0 font-semibold text-gray-700 md:w-15">
+                <label className="shrink-0 text-left font-semibold text-gray-700 md:w-15">
                   A. 답변
                 </label>
 
                 <div className="w-full md:flex-1">
                   <Textarea
-                    className="w-full rounded-md border border-gray-300 px-2 py-5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    value={answer}
+                    onChange={(e) => setAnswer(e.target.value)}
+                    className="min-h-40 w-full resize-none rounded-md border border-gray-300 px-2 py-3 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     placeholder="답변을 입력하세요"
                   />
                 </div>
@@ -241,9 +254,9 @@ export default function AdminFaqPage() {
             </AlertDialogCancel>
             <AlertDialogAction
               className="cursor-pointer"
-              // onClick={handleDeleteQnaAction}
+              onClick={handleCreateFaqAction}
             >
-              삭제
+              등록
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
