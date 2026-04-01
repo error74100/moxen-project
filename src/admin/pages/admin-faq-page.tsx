@@ -12,6 +12,18 @@ import {
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const faqs = [
   {
@@ -50,6 +62,7 @@ const faqs = [
 
 export default function AdminFaqPage() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggleExpand = (id: number) => {
     setExpandedId(expandedId === id ? null : id);
@@ -65,7 +78,10 @@ export default function AdminFaqPage() {
       <div className="rounded-sm border border-gray-200 bg-white p-6 shadow-xs">
         <div className="space-y-6">
           <div className="flex flex-col justify-end gap-4 sm:flex-row sm:items-center">
-            <button className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-indigo-700">
+            <button
+              onClick={() => setIsOpen(true)}
+              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-indigo-700"
+            >
               <Plus size={18} />
               <span>FAQ 등록</span>
             </button>
@@ -183,6 +199,55 @@ export default function AdminFaqPage() {
           </div>
         </div>
       </div>
+
+      <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>FAQ 등록</AlertDialogTitle>
+            <AlertDialogDescription>
+              질문과 답변을 추가해주세요.
+            </AlertDialogDescription>
+            <div className="w-full">
+              <div className="flex w-full flex-col gap-2 border-b py-4 md:flex-row md:items-center md:justify-between">
+                <label className="shrink-0 font-semibold text-gray-700 md:w-15">
+                  Q. 질문
+                </label>
+
+                <div className="w-full md:flex-1">
+                  <Input
+                    type="text"
+                    className="w-full rounded-md border border-gray-300 px-2 py-5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    placeholder="질문을 입력하세요"
+                  />
+                </div>
+              </div>
+              <div className="flex w-full flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between">
+                <label className="shrink-0 font-semibold text-gray-700 md:w-15">
+                  A. 답변
+                </label>
+
+                <div className="w-full md:flex-1">
+                  <Textarea
+                    className="w-full rounded-md border border-gray-300 px-2 py-5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    placeholder="답변을 입력하세요"
+                  />
+                </div>
+              </div>
+            </div>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="cursor-pointer">
+              취소
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="cursor-pointer"
+              // onClick={handleDeleteQnaAction}
+            >
+              삭제
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
