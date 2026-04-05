@@ -91,18 +91,21 @@ export type Database = {
           created_at: string
           id: number
           question: string
+          status: boolean
         }
         Insert: {
           answer: string
           created_at?: string
           id?: number
           question: string
+          status: boolean
         }
         Update: {
           answer?: string
           created_at?: string
           id?: number
           question?: string
+          status?: boolean
         }
         Relationships: []
       }

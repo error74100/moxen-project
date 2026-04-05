@@ -1,4 +1,5 @@
 import QnaBg from "@/assets/images/qna_bg.jpg";
+import Loader from "@/components/loader";
 import QnaList from "@/components/qna/qna-list";
 import QnaWriteButton from "@/components/qna/qna-write-button";
 import {
@@ -7,30 +8,20 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useFaqsData } from "@/hooks/queries/use-faqs-data";
 import { useQnasData } from "@/hooks/queries/use-qnas-data";
 
-const faqs = [
-  {
-    q: "입실 가능한 시간은 언제인가요?",
-    a: "입실은 오전 10시부터 가능하며, 방문 전 미리 연락 주시면 안내해드립니다.",
-  },
-  {
-    q: "공용 시설은 어떤 것들이 있나요?",
-    a: "공용 주방, 세탁기, 건조기, 정수기, 전자레인지 등 다양한 시설을 무료로 이용할 수 있습니다.",
-  },
-  {
-    q: "계약 기간은 어떻게 되나요?",
-    a: "최소 1개월부터 계약 가능하며 장기 입실 시 할인 혜택이 있습니다.",
-  },
-];
-
 export default function QnaPage() {
+  const { data: faqs, isLoading, error } = useFaqsData();
+
   const {
     data: qnaListData,
     error: qnaListError,
     isPending: qnaListIsPending,
     refetch: qnaListRefetch,
   } = useQnasData(1, "");
+
+  if (isLoading || qnaListIsPending) return <Loader />;
 
   return (
     <div className="bg-background text-foreground min-h-screen">
@@ -80,19 +71,21 @@ export default function QnaPage() {
               collapsible
               className="border-t border-b border-gray-800"
             >
-              {faqs.map((faq, i) => (
-                <AccordionItem key={i} value={`item-${i}`}>
-                  <AccordionTrigger className="cursor-pointer justify-between text-left text-lg font-semibold [&_svg]:h-6 [&_svg]:w-6">
-                    <p>Q.</p>
-                    <p className="flex-1 text-left">{faq.q}</p>
-                  </AccordionTrigger>
+              {faqs
+                ?.filter((faq) => faq.status === true)
+                .map((faq, i) => (
+                  <AccordionItem key={i} value={`item-${i}`}>
+                    <AccordionTrigger className="cursor-pointer justify-between text-left text-lg font-semibold [&_svg]:h-6 [&_svg]:w-6">
+                      <p>Q.</p>
+                      <p className="flex-1 text-left">{faq.question}</p>
+                    </AccordionTrigger>
 
-                  <AccordionContent className="flex gap-4 pt-2 text-left text-lg leading-relaxed text-gray-600">
-                    <p>A.</p>
-                    <p>{faq.a}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+                    <AccordionContent className="flex gap-4 pt-2 text-left text-lg leading-relaxed text-gray-600">
+                      <p>A.</p>
+                      <p>{faq.answer}</p>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
             </Accordion>
           </div>
         </div>

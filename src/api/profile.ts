@@ -14,7 +14,10 @@ export async function fetchProfile(userId: string) {
 }
 
 export async function fetchProfileAll() {
-  const { data, error } = await supabase.from("profile").select("*");
+  const { data, error } = await supabase
+    .from("profile")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   if (error) throw error;
   return data;
